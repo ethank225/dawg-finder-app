@@ -1,15 +1,18 @@
-from flask import Flask
-import threading
-from updateDB import schedule_updates  # Import the scheduling function
+from flask import Flask, jsonify
+from updateDB import schedule_updates  # Your function to update the database
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Flask App Running with Scheduled Updates!"
+    return "Flask App Running on Vercel!"
 
-# Start the update script in a background thread
-if __name__ == "__main__":
-    updater_thread = threading.Thread(target=schedule_updates, daemon=True)
-    updater_thread.start()
-    app.run(host="0.0.0.0", port=4000, debug=True)
+@app.route("/update", methods=["GET"])
+def update_db():
+    """Trigger the database update manually."""
+    schedule_updates()  # Run the update function when requested
+    return jsonify({"message": "Database update triggered!"})
+
+# Required for Vercel
+def handler(event, context):
+    return app(event, context)

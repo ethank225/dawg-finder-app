@@ -1,17 +1,15 @@
-from flask import Flask, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from flask import Flask
+import threading
+from updateDB import schedule_updates  # Import the scheduling function
 
 app = Flask(__name__)
-CORS(app)  # Allow frontend requests
 
-@app.route('/')
+@app.route("/")
 def home():
-    return jsonify({"message": "Welcome to the DawgFinder API!"})
+    return "Flask App Running with Scheduled Updates!"
 
-@app.route('/api/data')
-def get_data():
-    return jsonify({"data": ["item1", "item2", "item3"]})
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+# Start the update script in a background thread
+if __name__ == "__main__":
+    updater_thread = threading.Thread(target=schedule_updates, daemon=True)
+    updater_thread.start()
+    app.run(host="0.0.0.0", port=4000, debug=True)

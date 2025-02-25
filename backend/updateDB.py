@@ -344,17 +344,24 @@ def main():
 # Schedule the function to run every hour
 def run_hourly_update():
     """Runs the full data update process every hour."""
+    from updateDB import main, update_database  # Ensure imports are inside function to avoid issues
+    print("⏳ Running database update...")
     class_info_grade_rmp_filtered = main()  # Fetch & process new data
     update_database(class_info_grade_rmp_filtered)  # Update SQLite DB
     print("✅ Hourly update complete!")
 
+def schedule_updates():
+    """Runs scheduled tasks in a separate thread."""
+    print("🚀 Background scheduler started!")  # Debugging print
 
-schedule.every(1).hours.do(run_hourly_update)
+    # Run once at startup
+    run_hourly_update()
 
-if __name__ == "__main__":
-    print("⏳ Starting scheduled updates...")
-    run_hourly_update()  # Run immediately on startup
+    # Schedule to run every hour
+    schedule.every(1).hours.do(run_hourly_update)
+    print("🕒 Task scheduled successfully!")
 
     while True:
+        print("🔄 Checking for scheduled tasks...")
         schedule.run_pending()
-        time.sleep(60)  # Check every minute
+        time.sleep(10)  # Reduce sleep time for testing

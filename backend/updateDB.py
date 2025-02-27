@@ -266,10 +266,11 @@ def main():
   }).fillna(0)
 
 
-  grade_summary_df
-
   grade_summary_df = grade_summary_df.reset_index()
-  grade_summary_df['index']
+  gpa_df = gpa_df.reset_index()
+
+    #Merge these together
+  grade_summary_df = pd.merge(grade_summary_df, gpa_df, on = 'index')
 
   #class_info and the grade summary
   class_info_grade = pd.merge(class_info_df, grade_summary_df, on="index", how="left")
@@ -337,14 +338,13 @@ def main():
     # Run fuzzy merge with improved logic
   class_info_grade_rmp, match_df = fuzzy_merge(class_info_grade, rmp_data, "Instructor", "Name", threshold=95)
 
-  class_info_grade_rmp_filtered = class_info_grade_rmp[['Course Code', 'Course Description', "Course Title", 'Credits', 'prefix', 'Start', 'End', 'Instructor', 'Rating', 'mean', 'Term', 'Building', 'GenEd Requirements', 'Days', "Section", "Registration Code"]]
 
-  return class_info_grade_rmp_filtered
+  return class_info_grade_rmp
 
 
 if __name__ ==  "__main__":
-  class_info_grade_rmp_filtered = main()  # Fetch & process new data
-  update_database(class_info_grade_rmp_filtered)  # Update SQLite DB
+  class_info_grade = main()  # Fetch & process new data
+  update_database(class_info_grade)  # Update SQLite DB
   print("✅ Hourly update complete!")
 
 

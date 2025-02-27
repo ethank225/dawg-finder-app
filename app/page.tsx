@@ -125,7 +125,7 @@ export default function Home() {
               <Input
                 type="text"
                 placeholder="Ask any question about UW classes..."
-                className="w-full h-20 px-6 rounded-xl bg-[#4b2e83]/5 border-2 border-[#4b2e83]/10 hover:border-[#4b2e83]/20 focus:border-[#4b2e83] text-[#4b2e83] placeholder:text-[#4b2e83]/50 text-xl transition-colors"
+                className="w-full h-20 px-6 rounded-xl bg-[#4b2e83]/5 border-2 border-[#4b2e83]/10 hover:border-[#4b2e83]/20 placeholder:text-[#4b2e83]/50 text-xl transition-colors"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -218,7 +218,7 @@ export default function Home() {
                   <div className="text-right">
                     <div className="text-sm text-[#4b2e83]/70">Average GPA</div>
                     <div className="text-2xl font-bold text-[#4b2e83]">
-                      {classItem.mean.toFixed(2)}
+                      {classItem.Mean.toFixed(2)}
                     </div>
                   </div>
                 </div>
@@ -323,30 +323,61 @@ export default function Home() {
                     <p>Average GPA: {selectedClass?.["mean"]?.toFixed(2)}</p>
                     <p>Requirements: {selectedClass?.["GenEd Requirements"]}</p>
                     <p>Quarters Offered: {selectedClass?.["Term"]}</p>
-                    <div className="flex items-center gap-2 font-bold">
+                    <div>
                       <a
                         href={selectedClass?.Link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-[#4b2e83]/5 hover:bg-[#4b2e83]/10 hover:animate-hover-glow transition-all rounded-xl p-6 text-[#4b2e83] hover:text-white inline-flex items-center justify-between w-full"
+                        className="bg-[#4b2e83]/5 hover:bg-[#4b2e83]/10 hover:animate-hover-glow transition-all rounded-xl p-6 text-[#4b2e83] hover:text-white inline-flex items-center justify-between w-full flex flex-col"
                       >
                         <span className="mr-2 font-medium font-semibold">
                           {selectedClass?.Instructor}
                         </span>
 
-                        <span className="inline-flex items-center gap-2 text-md text-gray-700 font-medium">
-                          {Array.from({ length: 5 }, (_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-5 h-5 ${
-                                i + 0.5 < selectedClass?.["mean"]
-                                  ? "fill-[#b7a57a] stroke-[#b7a57a]"
-                                  : "fill-gray-300 stroke-gray-300"
-                              }`}
-                            />
-                          ))}
-                          <span className="text-md">
-                            ({selectedClass?.["mean"].toFixed(1)}/5)
+                        <span className="flex flex-col items-end gap-1 text-md text-gray-700 font-medium font-semibold">
+                          {/* Mean Rating */}
+                          <span className="inline-flex items-center gap-2 ">
+                            {Array.from({ length: 5 }, (_, i) => (
+                              <Star
+                                key={`rating-${i}`}
+                                className="w-5 h-5"
+                                style={{
+                                  fill:
+                                    i + 0.5 < selectedClass?.["Rating"]
+                                      ? "green"
+                                      : "gray",
+                                  stroke:
+                                    i + 0.5 < selectedClass?.["Rating"]
+                                      ? "green"
+                                      : "gray",
+                                }}
+                              />
+                            ))}
+                            <span className="text-md">
+                              ({selectedClass?.["Rating"].toFixed(1)}/5)
+                            </span>
+                          </span>
+                          {/* Difficulty Rating */}
+                          <span className="inline-flex items-center gap-2">
+                            {Array.from({ length: 5 }, (_, i) => (
+                              <Star
+                                key={`difficulty-${i}`}
+                                className="w-5 h-5"
+                                style={{
+                                  fill:
+                                    i + 0.5 < selectedClass?.["Difficulty"]
+                                      ? "red"
+                                      : "gray",
+                                  stroke:
+                                    i + 0.5 < selectedClass?.["Difficulty"]
+                                      ? "red"
+                                      : "gray",
+                                }}
+                              />
+                            ))}
+                            <span className="text-md">
+                              ({selectedClass?.["Difficulty"].toFixed(1)}/5)
+                            </span>
                           </span>
                         </span>
                       </a>

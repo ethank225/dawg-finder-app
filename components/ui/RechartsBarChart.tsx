@@ -19,7 +19,7 @@ const RechartsBarChart = ({ selectedClass }: { selectedClass: any }) => {
     });
 
   return (
-    <div className="bg-white p-6 shadow-lg p-6 rounded-xl">
+    <div className="bg-white p-6 shadow-lg p-6 rounded-xl mb-8 border-b">
       <h2 className="text-2xl font-bold text-[#4b2e83] mb-2">Course Grade Distribution</h2>
       <p className="text-gray-600 mb-4">
         This graph represents the distribution of grades for every student who completed <strong>{selectedClass['Course Code']}</strong> over the past 5 years.

@@ -16,7 +16,7 @@ const mockClasses = [
     "Difficulty": 3.5,
     "Term": "Autumn 2024",
     "Building": "CSE2",
-    "GenEd Requirements": "NSc",
+    "GenEd Requirements": "NSc, A&H",
     "Days": "MWF",
     "Section": "A",
     "Registration Code": 12345,

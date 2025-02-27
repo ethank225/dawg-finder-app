@@ -12,6 +12,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
+import CourseCard from "@/components/ui/course-card";
+
 import {
   BookOpen,
   GraduationCap,
@@ -292,171 +294,79 @@ export default function Home() {
           onOpenChange={() => setSelectedClass(null)}
         >
           <DialogContent className="bg-white text-[#4b2e83] border-2 border-[#4b2e83] max-w-4xl max-h-[90vh] overflow-y-auto ">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-[#4b2e83] flex items-baseline gap-3">
-                <span>
-                  {selectedClass?.["Course Code"]} {selectedClass?.Section}
-                </span>
-
-                <span className="text-lg font-normal text-[#4b2e83]/70">
-                  {selectedClass?.["Credits"]} Credits
-                </span>
-              </DialogTitle>
-              <h2 className="text-xl text-[#4b2e83]/90 mt-1">
-                {selectedClass?.["Course Title"]}
-              </h2>
-            </DialogHeader>
-            <p className="font-bold text-lg border border-[#3a1e6e] rounded-md px-3 py-1 inline">
-              SLN: {selectedClass?.["Registration Code"]}
-            </p>
-
             {/* Course Overview */}
             <div className="mt-6 ">
-              <h3 className="font-semibold">Course Statistics</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 shadow-md p-6 rounded-xl">
-                <div className="space-y-3">
-                  <h3 className="font-semibold flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    Course Information
-                  </h3>
-                  <div className="grid gap-2">
-                    <p>Average GPA: {selectedClass?.["mean"]?.toFixed(2)}</p>
-                    <p>Requirements: {selectedClass?.["GenEd Requirements"]}</p>
-                    <p>Quarters Offered: {selectedClass?.["Term"]}</p>
-                    <div>
-                      <a
-                        href={selectedClass?.Link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-[#4b2e83]/5 hover:bg-[#4b2e83]/10 hover:animate-hover-glow transition-all rounded-xl p-6 text-[#4b2e83] hover:text-white inline-flex items-center justify-between w-full flex flex-col"
-                      >
-                        <span className="mr-2 font-medium font-semibold">
-                          {selectedClass?.Instructor}
-                        </span>
+              {selectedClass && (
+                <>
+                  <CourseCard courseData={selectedClass} />
+                  <RechartsBarChart selectedClass={selectedClass} />
 
-                        <span className="flex flex-col items-end gap-1 text-md text-gray-700 font-medium font-semibold">
-                          {/* Mean Rating */}
-                          <span className="inline-flex items-center gap-2 ">
-                            {Array.from({ length: 5 }, (_, i) => (
-                              <Star
-                                key={`rating-${i}`}
-                                className="w-5 h-5"
-                                style={{
-                                  fill:
-                                    i + 0.5 < selectedClass?.["Rating"]
-                                      ? "green"
-                                      : "gray",
-                                  stroke:
-                                    i + 0.5 < selectedClass?.["Rating"]
-                                      ? "green"
-                                      : "gray",
-                                }}
-                              />
-                            ))}
-                            <span className="text-md">
-                              ({selectedClass?.["Rating"].toFixed(1)}/5)
-                            </span>
-                          </span>
-                          {/* Difficulty Rating */}
-                          <span className="inline-flex items-center gap-2">
-                            {Array.from({ length: 5 }, (_, i) => (
-                              <Star
-                                key={`difficulty-${i}`}
-                                className="w-5 h-5"
-                                style={{
-                                  fill:
-                                    i + 0.5 < selectedClass?.["Difficulty"]
-                                      ? "red"
-                                      : "gray",
-                                  stroke:
-                                    i + 0.5 < selectedClass?.["Difficulty"]
-                                      ? "red"
-                                      : "gray",
-                                }}
-                              />
-                            ))}
-                            <span className="text-md">
-                              ({selectedClass?.["Difficulty"].toFixed(1)}/5)
-                            </span>
-                          </span>
-                        </span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <h3 className="font-semibold">Course Description</h3>
-                  <p className="text-[#4b2e83]/70">
-                    {selectedClass?.["Course Description"]}
-                  </p>
-                </div>
-              </div>
-              <RechartsBarChart selectedClass={selectedClass} />
-
-              {/* Available Sections */}
-              <div className="mt-8">
-                <h3 className="font-semibold text-lg mb-4">
-                  Available Sections
-                </h3>
-                <div className="grid gap-4">
-                  {selectedClass?.sections?.map((section: any) => (
-                    <div
-                      key={section["Registration Code"]}
-                      className="bg-[#4b2e83]/5 rounded-lg p-4 border border-[#4b2e83]/10"
-                    >
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <span className="font-semibold text-lg">
-                              Section {section["Section"]}
-                            </span>
-                            <span className="text-sm bg-[#4b2e83]/10 px-2 py-1 rounded">
-                              SLN: {section["Registration Code"]}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2 text-[#4b2e83]/80">
-                            <GraduationCap className="w-4 h-4" />
-                            <span>{section["Instructor"]}</span>
-                            <span className="flex items-center gap-1 text-sm">
-                              <Star className="w-3 h-3 fill-[#b7a57a] stroke-[#b7a57a]" />
-                              {section["mean"].toFixed(1)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-[#4b2e83]/80">
-                            <Clock className="w-4 h-4" />
-                            <span>
-                              {section["Days"]} {section["Start"]} -{" "}
-                              {section["End"]}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2 text-[#4b2e83]/80">
-                            <Building2 className="w-4 h-4" />
-                            <span>{section["Building"]}</span>
-                          </div>
-                          <div className="text-[#4b2e83]/80">
-                            Enrollment: {section.enrollCount}/
-                            {section.enrollMaximum}
-                            <div className="w-full bg-[#4b2e83]/10 rounded-full h-2 mt-1">
-                              <div
-                                className="bg-[#4b2e83] h-2 rounded-full"
-                                style={{
-                                  width: `${
-                                    (section.enrollCount /
-                                      section.enrollMaximum) *
-                                    100
-                                  }%`,
-                                }}
-                              />
+                  {/* Available Sections */}
+                  <div className="mt-8">
+                    <h3 className="font-semibold text-lg mb-4">
+                      Available Sections
+                    </h3>
+                    <div className="grid gap-4">
+                      {selectedClass.sections?.map((section: any) => (
+                        <div
+                          key={section["Registration Code"]}
+                          className="bg-[#4b2e83]/5 rounded-lg p-4 border border-[#4b2e83]/10"
+                        >
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between">
+                                <span className="font-semibold text-lg">
+                                  Section {section["Section"]}
+                                </span>
+                                <span className="text-sm bg-[#4b2e83]/10 px-2 py-1 rounded">
+                                  SLN: {section["Registration Code"]}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 text-[#4b2e83]/80">
+                                <GraduationCap className="w-4 h-4" />
+                                <span>{section["Instructor"]}</span>
+                                <span className="flex items-center gap-1 text-sm">
+                                  <Star className="w-3 h-3 fill-[#b7a57a] stroke-[#b7a57a]" />
+                                  {section["mean"].toFixed(1)}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2 text-[#4b2e83]/80">
+                                <Clock className="w-4 h-4" />
+                                <span>
+                                  {section["Days"]} {section["Start"]} -{" "}
+                                  {section["End"]}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 text-[#4b2e83]/80">
+                                <Building2 className="w-4 h-4" />
+                                <span>{section["Building"]}</span>
+                              </div>
+                              <div className="text-[#4b2e83]/80">
+                                Enrollment: {section.enrollCount}/
+                                {section.enrollMaximum}
+                                <div className="w-full bg-[#4b2e83]/10 rounded-full h-2 mt-1">
+                                  <div
+                                    className="bg-[#4b2e83] h-2 rounded-full"
+                                    style={{
+                                      width: `${
+                                        (section.enrollCount /
+                                          section.enrollMaximum) *
+                                        100
+                                      }%`,
+                                    }}
+                                  />
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                </>
+              )}
             </div>
           </DialogContent>
         </Dialog>

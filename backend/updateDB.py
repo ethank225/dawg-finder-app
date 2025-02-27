@@ -337,9 +337,12 @@ def main():
 
     # Run fuzzy merge with improved logic
   class_info_grade_rmp, match_df = fuzzy_merge(class_info_grade, rmp_data, "Instructor", "Name", threshold=95)
+  course_eval_ratings = pd.read_json('/Users/ethan/Desktop/dawgfinder/backend/data/course_eval_ratings.json')
+
+  merged, match_df = fuzzy_merge(class_info_grade_rmp, course_eval_ratings, "Instructor", "Instructor Name", threshold=95)
 
 
-  return class_info_grade_rmp
+  return merged
 
 
 if __name__ ==  "__main__":

@@ -66,13 +66,17 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        hoverGlow: {
+          "0%": { boxShadow: "0 0 0px rgba(75, 46, 131, 0)" },
+          "100%": { boxShadow: "0 4px 15px rgba(75, 46, 131, 0.3)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "hover-glow": "hoverGlow 0.3s ease-in-out",
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
-
+};

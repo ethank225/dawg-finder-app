@@ -66,7 +66,7 @@ export function InstructorProfile({
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center">
                     <ThumbsUp className="h-4 w-4 text-emerald-500 mr-2" />
-                    Overall Rating
+                    Instructor Rating
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

@@ -41,7 +41,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { InstructorProfile } from "@/components/ui/instructor-profile"; // Import it here
 
-
 interface CourseCardProps {
   courseData: any;
 }
@@ -162,9 +161,13 @@ export default function CourseCard({ courseData }: CourseCardProps) {
                           star <= Math.round(courseData.Rating || 0)
                         }`}
                         style={{
-                          fill: star < courseData["Rating"] ? "green" : "gray",
+                          fill: star <= Math.round(courseData.Rating || 3.5)
+                          ? "green"
+                          : "gray",
                           stroke:
-                            star < courseData["Rating"] ? "green" : "gray",
+                            star <= Math.round(courseData.Rating || 3.5)
+                            ? "green"
+                            : "gray",
                         }}
                       />
                     ))}
@@ -216,9 +219,13 @@ export default function CourseCard({ courseData }: CourseCardProps) {
                         }`}
                         style={{
                           fill:
-                            star < courseData["Difficulty"] ? "red" : "gray",
+                            star <= Math.round(courseData.Difficulty || 3.5)
+                              ? "red"
+                              : "gray",
                           stroke:
-                            star < courseData["Difficulty"] ? "red" : "gray",
+                            star <= Math.round(courseData.Difficulty || 3.5)
+                              ? "red"
+                              : "gray",
                         }}
                       />
                     ))}

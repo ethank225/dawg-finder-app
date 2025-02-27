@@ -132,9 +132,10 @@ export function InstructorProfile({
               </Card>
             </div>
 
-
             <div className="space-y-2 mt-6">
-              <h3 className="text-lg font-medium">Evaluation Metrics</h3>
+              <h3 className="text-xl text-center underline-offset-1 mb-2 font-bold">
+                Evaluation Metrics
+              </h3>
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between mb-1">
@@ -177,9 +178,6 @@ export function InstructorProfile({
                 </div>
               </div>
             </div>
-
-
-
           </TabsContent>
 
           {/* Courses Tab */}

@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import Database from "better-sqlite3";
 
 // Connect to SQLite database
-const dbPath = "/backend/data/all_data.db";
+const path = require("path");
+const dbPath = path.join(__dirname, "backend", "data", "all_data.db");
 const db = new Database(dbPath, { fileMustExist: true });
 
 export async function GET(req) {

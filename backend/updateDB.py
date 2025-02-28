@@ -127,7 +127,8 @@ def fetch_course_details(url):
                                 "GenEd Requirements": ", ".join(course_data["courseSummaryDetails"].get("abbrGenEdRequirements", [])),
                                 "Registration Code": activity.get("registrationCode", "N/A"),  # Added Registration Code
                                 "enrollCount": activity.get("enrollCount", "N/A"),  # Added Registration Code
-                                "enrollMaximum": activity.get("enrollMaximum", "N/A")  # Added Registration Code
+                                "enrollMaximum": activity.get("enrollMaximum", "N/A"),  # Added Registration Code
+                                "myPlanLink": api_url
                             }
                         )
 

@@ -13,6 +13,7 @@ import {
   Award,
   Building2,
   Clock,
+  ExternalLink,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -77,6 +78,17 @@ export default function CourseCard({ courseData }: CourseCardProps) {
                 <Badge variant="outline" className="ml-2">
                   {courseData.Credits} Credits
                 </Badge>
+                <button
+                  onClick={() =>
+                    window.open(
+                      `https://myplan.uw.edu/course/#/courses/${courseData.index}`,
+                      "_blank"
+                    )
+                  }
+                  className="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                >
+                  <ExternalLink className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+                </button>
               </div>
               <CardDescription className="text-lg mt-1">
                 {courseData["Course Title"]}
@@ -108,7 +120,6 @@ export default function CourseCard({ courseData }: CourseCardProps) {
                   <span className="text-sm">Requirements:</span>
                   <Badge>{courseData["GenEd Requirements"] || "None"}</Badge>
                 </div>
-
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Quarters Offered:</span>
                   <div className="flex items-center gap-1">
@@ -161,13 +172,14 @@ export default function CourseCard({ courseData }: CourseCardProps) {
                           star <= Math.round(courseData.Rating || 0)
                         }`}
                         style={{
-                          fill: star <= Math.round(courseData.Rating || 3.5)
-                          ? "green"
-                          : "gray",
+                          fill:
+                            star <= Math.round(courseData.Rating || 3.5)
+                              ? "green"
+                              : "gray",
                           stroke:
                             star <= Math.round(courseData.Rating || 3.5)
-                            ? "green"
-                            : "gray",
+                              ? "green"
+                              : "gray",
                         }}
                       />
                     ))}
@@ -179,7 +191,7 @@ export default function CourseCard({ courseData }: CourseCardProps) {
                     <div className="flex items-center gap-1">
                       <BarChart3 className="h-4 w-4 text-rose-500" />
                       <span className="text-sm font-medium">
-                        Course Difficulty
+                        Instructor Difficulty
                       </span>
                     </div>
                     <span className="font-bold">

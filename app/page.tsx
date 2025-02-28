@@ -288,6 +288,7 @@ export default function Home() {
           </motion.div>
         )}
 
+
         {/* Class Details Dialog */}
         <Dialog
           open={!!selectedClass}

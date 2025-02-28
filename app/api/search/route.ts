@@ -63,7 +63,10 @@ const mockClasses = [
     "38": 39,
     "39": 40,
     "40": 41,
-    "Link": "https://www.ratemyprofessors.com/professor/954490"
+    "Link": "https://www.ratemyprofessors.com/professor/954490",
+    "myPlanLink": "https://course-app-api.planning.sis.uw.edu/api/courses/AFRAM%20150/details",
+    "index": "AFRAM150"
+
   },
   {
     "Course Code": "CSE 142",
@@ -126,7 +129,10 @@ const mockClasses = [
     "38": 39,
     "39": 40,
     "40": 41,
-    "Link": "https://www.ratemyprofessors.com/professor/954490"
+    "Link": "https://www.ratemyprofessors.com/professor/954490",
+    "myPlanLink": "https://course-app-api.planning.sis.uw.edu/api/courses/AFRAM%20150/details",
+    "index": "AFRAM150"
+
   },
   {
     "Course Code": "CSE 142",
@@ -148,7 +154,10 @@ const mockClasses = [
     "Registration Code": 12347,
     "enrollCount": 120,
     "enrollMaximum": 150,
-    "Link": "https://www.ratemyprofessors.com/professor/954490"
+    "Link": "https://www.ratemyprofessors.com/professor/954490",
+    "myPlanLink": "https://course-app-api.planning.sis.uw.edu/api/courses/AFRAM%20150/details",
+    "index": "AFRAM150"
+
   }
 ];
 

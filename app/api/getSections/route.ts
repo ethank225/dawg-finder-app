@@ -41,7 +41,8 @@ const mockSections = [
     "Section": "BA",
     "Registration Code": 12346,
     "enrollCount": 180,
-    "enrollMaximum": 200
+    "enrollMaximum": 200,
+    "myPlanLink": "https://course-app-api.planning.sis.uw.edu/api/courses/AFRAM%20150/details"
   },
   {
     "Course Code": "CSE 142",
@@ -62,7 +63,8 @@ const mockSections = [
     "Section": "CA",
     "Registration Code": 12347,
     "enrollCount": 120,
-    "enrollMaximum": 150
+    "enrollMaximum": 150,
+    "myPlanLink": "https://course-app-api.planning.sis.uw.edu/api/courses/AFRAM%20150/details"
   }
 ];
 

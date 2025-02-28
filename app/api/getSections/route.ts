@@ -1,76 +1,41 @@
 import { NextResponse } from "next/server";
+import Database from "better-sqlite3";
 
-const mockSections = [
-  {
-    "Course Code": "CSE 142",
-    "Course Description": "Introduction to programming.",
-    "Course Title": "Computer Programming I",
-    "Credits": "4",
-    "prefix": "CSE",
-    "Start": "10:30",
-    "End": "11:20",
-    "Instructor": "Stuart Reges",
-    "Rating": 4.2,
-    "Difficulty": 3.5,
-    "mean": 3.6,
-    "Term": "Autumn 2024",
-    "Building": "CSE2",
-    "GenEd Requirements": "NSc",
-    "Days": "MWF",
-    "Section": "AA",
-    "Registration Code": 12345,
-    "enrollCount": 150,
-    "enrollMaximum": 200
-  },
-  {
-    "Course Code": "CSE 142",
-    "Course Description": "Introduction to programming.",
-    "Course Title": "Computer Programming I",
-    "Credits": "4",
-    "prefix": "CSE",
-    "Start": "11:30",
-    "End": "12:20",
-    "Instructor": "Brett Wortzman",
-    "Rating": 4.5,
-    "Difficulty": 3.5,
-    "mean": 3.8,
-    "Term": "Autumn 2024",
-    "Building": "CSE2",
-    "GenEd Requirements": "NSc",
-    "Days": "MWF",
-    "Section": "BA",
-    "Registration Code": 12346,
-    "enrollCount": 180,
-    "enrollMaximum": 200,
-    "myPlanLink": "https://course-app-api.planning.sis.uw.edu/api/courses/AFRAM%20150/details"
-  },
-  {
-    "Course Code": "CSE 142",
-    "Course Description": "Introduction to programming.",
-    "Course Title": "Computer Programming I",
-    "Credits": "4",
-    "prefix": "CSE",
-    "Start": "13:30",
-    "End": "14:20",
-    "Instructor": "Kevin Lin",
-    "Rating": 4.7,
-    "Difficulty": 3.5,
-    "mean": 3.9,
-    "Term": "Autumn 2024",
-    "Building": "CSE2",
-    "GenEd Requirements": "NSc",
-    "Days": "TTh",
-    "Section": "CA",
-    "Registration Code": 12347,
-    "enrollCount": 120,
-    "enrollMaximum": 150,
-    "myPlanLink": "https://course-app-api.planning.sis.uw.edu/api/courses/AFRAM%20150/details"
+// Connect to SQLite database
+const dbPath = "/Users/ethan/Desktop/dawgfinder/backend/data/all_data.db";
+const db = new Database(dbPath, { fileMustExist: true });
+
+export async function GET(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const query = searchParams.get("courseId")?.replace(/\s/g, ""); // Remove all spaces
+    const lectureId = query.slice(-1); // Extract the last character
+    const updatedQuery = query.slice(0, -1); // Remove the last character
+
+    console.log("Lecture ID:", lectureId);
+    console.log("Updated Query:", updatedQuery);
+
+
+    if (!lectureId) {
+      return NextResponse.json({ error: "Invalid courseId" }, { status: 400 });
+    }
+
+    // Prepare and execute SQL query
+    const statement = db.prepare(`
+      SELECT DISTINCT * FROM courses
+      WHERE "index" = ? AND substr("Section", 1, 1) = ? AND "Activity Type" = ?
+    `);
+
+    const results = statement.all(updatedQuery, lectureId, "quiz"); // Ensures first character of "Section" matches lectureId
+
+    console.log("Results:", results);
+    return NextResponse.json(results);
+  } catch (error) {
+    console.error("Database error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
-];
-
-
-export async function GET(req: Request) {
-  console.log(req);
-
-  return NextResponse.json(mockSections);
 }
+
+
+
+

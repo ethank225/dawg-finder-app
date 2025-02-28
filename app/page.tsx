@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
 import CourseCard from "@/components/ui/course-card";
+import { InstructorProfile } from "@/components/ui/instructor-profile"; // Import it here
 
 import {
   BookOpen,
@@ -25,12 +26,47 @@ import {
 } from "lucide-react";
 import RechartsBarChart from "@/components/ui/RechartsBarChart";
 
+import { Badge } from "@/components/ui/badge";
+
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchPerformed, setSearchPerformed] = useState(false);
   const [selectedClass, setSelectedClass] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchResult, setSearchResult] = useState<any[]>([]); // Add this state
+  const [sections, setSections] = useState<any[]>([]);
+  const [open, setOpen] = useState(false);
+  const [selectedInstructor, setSelectedInstructor] = useState<string | null>(
+    null
+  );
+
+  function getRatingInfo(rating: number) {
+    if (rating >= 4.5) {
+      return { label: "Excellent", style: { backgroundColor: "#22c55e" } }; // Tailwind green-500
+    } else if (rating >= 3.5) {
+      return { label: "Good", style: { backgroundColor: "#84cc16" } }; // Tailwind lime-500
+    } else if (rating >= 2.5) {
+      return { label: "Average", style: { backgroundColor: "#fde047" } }; // Tailwind yellow-300
+    } else if (rating >= 0) {
+      return { label: "None", style: { backgroundColor: "#d1d5db" } }; // Tailwind gray-400
+    } else {
+      return { label: "Invalid", style: { backgroundColor: "#ef4444" } }; // Tailwind red-500 (for negative or null values)
+    }
+  }
+
+  function getDifficultyInfo(rating: number) {
+    if (rating >= 4.5) {
+      return { label: "Hard", style: { backgroundColor: "#ef4444" } }; // Tailwind red-500
+    } else if (rating >= 3.5) {
+      return { label: "Average", style: { backgroundColor: "#facc15" } }; // Tailwind yellow-400
+    } else if (rating >= 2.5) {
+      return { label: "Easy", style: { backgroundColor: "#86efac" } }; // Tailwind green-300
+    } else if (rating >= 0) {
+      return { label: "None", style: { backgroundColor: "#d1d5db" } }; // Tailwind gray-400
+    } else {
+      return { label: "Invalid", style: { backgroundColor: "#ef4444" } }; // Tailwind red-500 (for negative or null values)
+    }
+  }
 
   //Handles the search query
   const handleSearch = async (e: React.FormEvent) => {
@@ -63,11 +99,13 @@ export default function Home() {
   const handleClassClick = async (classItem: any) => {
     const courseCode = classItem["Course Code"];
     const courseSection = classItem.Section;
-    const query = `${courseCode} ${courseSection}`;
+    const query = `${courseCode}${courseSection}`;
+
     console.log("Fetching sections for:", query);
 
-    // Set selected class before fetching sections
-    setSelectedClass({ ...classItem, sections: [] });
+    // Set selected class without modifying sections
+    setSelectedClass(classItem);
+    setSections([]); // Clear previous sections
     setIsLoading(true);
 
     try {
@@ -77,15 +115,7 @@ export default function Home() {
       }
 
       const data = await response.json();
-
-      // Ensure data is an array; if not, default to an empty array
-      const sections = Array.isArray(data) ? data : [];
-
-      // Update selectedClass with fetched sections
-      setSelectedClass((prevState: any) => ({
-        ...prevState,
-        sections: sections, // Ensure sections is always an array
-      }));
+      setSections(Array.isArray(data) ? data : []); // Store sections separately
     } catch (error) {
       console.error("Error fetching sections:", error);
     } finally {
@@ -94,6 +124,7 @@ export default function Home() {
   };
 
   const convertTo12Hour = (time: any) => {
+    if (!time) return "Not Available"; // Handle null or undefined
     const [hours, minutes] = time.split(":");
     return new Date(0, 0, 0, hours, minutes).toLocaleTimeString("en-US", {
       hour: "numeric",
@@ -220,7 +251,7 @@ export default function Home() {
                   <div className="text-right">
                     <div className="text-sm text-[#4b2e83]/70">Average GPA</div>
                     <div className="text-2xl font-bold text-[#4b2e83]">
-                      {classItem.Mean.toFixed(2)}
+                      {classItem.mean?.toFixed(2) ?? ""}
                     </div>
                   </div>
                 </div>
@@ -263,14 +294,51 @@ export default function Home() {
                   </div>
 
                   <div className="space-y-3">
-                    {/* Professor Info */}
-                    <div className="flex items-center gap-2 text-[#4b2e83]/80">
-                      <GraduationCap className="w-4 h-4" />
-                      <span>{classItem.Instructor}</span>
+                    <div className="flex items-center gap-2 text-[#6b5a9e]">
+                      <Star className="h-5 w-5" />
+                      <div className="flex items-center gap-2">
+                        <span>Rating:</span>
+                        <div className="flex items-center gap-1">
+                          {(() => {
+                            const { label: ratingLabel, style: ratingClass } =
+                              getDifficultyInfo(classItem.Rating ?? 0);
+                            return (
+                              <Badge
+                                className={`${ratingClass} text-white px-2 py-0.5 text-xs rounded-full`}
+                              >
+                                {ratingLabel}
+                              </Badge>
+                            );
+                          })()}
+                          <span className="text-sm">
+                            ({classItem.Rating?.toFixed(1) ?? "N/A"}/5)
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-[#4b2e83]/80">
-                      <Star className="w-4 h-4" />
-                      <span>{classItem.Rating.toFixed(1)} / 5.0</span>
+
+                    {/* Professor Info */}
+                    <div className="flex items-center gap-2 text-[#6b5a9e]">
+                      <BookOpen className="h-5 w-5" />
+                      <div className="flex items-center gap-2">
+                        <span>Difficulty:</span>
+                        <div className="flex items-center gap-1">
+                          {(() => {
+                            const { label: ratingLabel, style: ratingClass } =
+                              getDifficultyInfo(classItem.Rating ?? 0);
+                            return (
+                              <Badge
+                                className={`${ratingClass} text-white px-2 py-0.5 text-xs rounded-full`}
+                              >
+                                {ratingLabel}
+                              </Badge>
+                            );
+                          })()}
+                          <span className="text-sm">
+                            ({classItem.Difficulty?.toFixed(1) ?? "N/A"}/5)
+                          </span>
+                        </div>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 text-[#4b2e83]/80">
                       <BookOpen className="w-4 h-4" />
@@ -287,7 +355,6 @@ export default function Home() {
             ))}
           </motion.div>
         )}
-
 
         {/* Class Details Dialog */}
         <Dialog
@@ -308,7 +375,7 @@ export default function Home() {
                       Available Sections
                     </h3>
                     <div className="grid gap-4">
-                      {selectedClass.sections?.map((section: any) => (
+                      {sections?.map((section: any) => (
                         <div
                           key={section["Registration Code"]}
                           className="bg-[#4b2e83]/5 rounded-lg p-4 border border-[#4b2e83]/10"
@@ -325,10 +392,31 @@ export default function Home() {
                               </div>
                               <div className="flex items-center gap-2 text-[#4b2e83]/80">
                                 <GraduationCap className="w-4 h-4" />
-                                <span>{section["Instructor"]}</span>
+                                <button
+                                  onClick={() => {
+                                    console.log(
+                                      "Setting instructor:",
+                                      section.Instructor
+                                    );
+                                    setSelectedInstructor(section.Instructor); // Ensure correct instructor
+                                    setOpen(true);
+                                  }}
+                                  className="text-primary hover:underline font-medium flex items-center gap-1"
+                                >
+                                  {section.Instructor}
+                                </button>
+
+                                {open && selectedInstructor && (
+                                  <InstructorProfile
+                                    instructor={selectedInstructor}
+                                    courseData={section}
+                                    open={open}
+                                    setOpen={setOpen}
+                                  />
+                                )}
                                 <span className="flex items-center gap-1 text-sm">
                                   <Star className="w-3 h-3 fill-[#b7a57a] stroke-[#b7a57a]" />
-                                  {section["mean"].toFixed(1)}
+                                  {section.mean?.toFixed(2) ?? ""}
                                 </span>
                               </div>
                             </div>

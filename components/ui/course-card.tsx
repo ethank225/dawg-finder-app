@@ -302,6 +302,7 @@ export default function CourseCard({ courseData }: CourseCardProps) {
           </div>
         </CardContent>
       </Card>
+      
       {/* Instructor Profile Component */}
       <InstructorProfile
         instructor={courseData.Instructor}

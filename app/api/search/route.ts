@@ -1,176 +1,32 @@
-import { NextResponse } from "next/server"
+import { NextResponse } from "next/server";
+import Database from "better-sqlite3";
 
-// Example mock data (replace this later with a real database query)
-const mockClasses = [
-  {
-    "Course Code": "CSE 142",
-    "Course Description": "Basic programming-in-the-small abilities and concepts including procedural programming (methods, parameters, return, values), basic control structures (sequence, if/else, for loop, while loop), file processing, arrays, and an introduction to defining objects. Intended for students without prior programming experience.",
-    "Course Title": "Computer Programming I",
-    "Credits": "4",
-    "prefix": "CSE",
-    "Start": "10:30",
-    "End": "11:20",
-    "Instructor": "Stuart Reges",
-    "Rating": 4.2,
-    "Mean": 3.6,
-    "Difficulty": 3.5,
-    "Term": "Autumn 2024",
-    "Building": "CSE2",
-    "GenEd Requirements": "NSc, A&H",
-    "Days": "MWF",
-    "Section": "A",
-    "Registration Code": 12345,
-    "enrollCount": 150,
-    "enrollMaximum": 200,
-    "0": 1,
-    "1": 2,
-    "2": 3,
-    "3": 4,
-    "4": 5,
-    "5": 6,
-    "6": 7,
-    "7": 8,
-    "8": 9,
-    "9": 10,
-    "10": 11,
-    "11": 12,
-    "12": 13,
-    "13": 14,
-    "14": 15,
-    "15": 16,
-    "16": 17,
-    "17": 18,
-    "18": 19,
-    "19": 20,
-    "20": 21,
-    "21": 22,
-    "22": 23,
-    "23": 24,
-    "24": 25,
-    "25": 26,
-    "26": 27,
-    "27": 28,
-    "28": 29,
-    "29": 30,
-    "30": 31,
-    "31": 32,
-    "32": 33,
-    "33": 34,
-    "34": 35,
-    "35": 36,
-    "36": 37,
-    "37": 38,
-    "38": 39,
-    "39": 40,
-    "40": 41,
-    "Link": "https://www.ratemyprofessors.com/professor/954490",
-    "myPlanLink": "https://course-app-api.planning.sis.uw.edu/api/courses/AFRAM%20150/details",
-    "index": "AFRAM150"
+// Connect to SQLite database
+const dbPath = "/Users/ethan/Desktop/dawgfinder/backend/data/all_data.db";
+const db = new Database(dbPath, { fileMustExist: true });
 
-  },
-  {
-    "Course Code": "CSE 142",
-    "Course Description": "Introduction to programming.",
-    "Course Title": "Computer Programming I",
-    "Credits": "4",
-    "prefix": "CSE",
-    "Start": "11:30",
-    "End": "12:20",
-    "Instructor": "Brett Wortzman",
-    "Rating": 4.5,
-    "Mean": 3.8,
-    "Difficulty": 3.5,
-    "Term": "Autumn 2024",
-    "Building": "CSE2",
-    "GenEd Requirements": "NSc",
-    "Days": "MWF",
-    "Section": "B",
-    "Registration Code": 12346,
-    "enrollCount": 180,
-    "enrollMaximum": 200,
-    "0": 1,
-    "1": 2,
-    "2": 3,
-    "3": 4,
-    "4": 5,
-    "5": 6,
-    "6": 7,
-    "7": 8,
-    "8": 9,
-    "9": 10,
-    "10": 11,
-    "11": 12,
-    "12": 13,
-    "13": 14,
-    "14": 15,
-    "15": 16,
-    "16": 17,
-    "17": 18,
-    "18": 19,
-    "19": 20,
-    "20": 21,
-    "21": 22,
-    "22": 23,
-    "23": 24,
-    "24": 25,
-    "25": 26,
-    "26": 27,
-    "27": 28,
-    "28": 29,
-    "29": 30,
-    "30": 31,
-    "31": 32,
-    "32": 33,
-    "33": 34,
-    "34": 35,
-    "35": 36,
-    "36": 37,
-    "37": 38,
-    "38": 39,
-    "39": 40,
-    "40": 41,
-    "Link": "https://www.ratemyprofessors.com/professor/954490",
-    "myPlanLink": "https://course-app-api.planning.sis.uw.edu/api/courses/AFRAM%20150/details",
-    "index": "AFRAM150"
+export async function GET(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const query = searchParams.get("q");
 
-  },
-  {
-    "Course Code": "CSE 142",
-    "Course Description": "Introduction to programming.",
-    "Course Title": "Computer Programming I",
-    "Credits": "4",
-    "prefix": "CSE",
-    "Start": "13:30",
-    "End": "14:20",
-    "Instructor": "Kevin Lin",
-    "Rating": 4.7,
-    "Mean": 3.9,
-    "Difficulty": 3.5,
-    "Term": "Autumn 2024",
-    "Building": "CSE2",
-    "GenEd Requirements": "NSc",
-    "Days": "TTh",
-    "Section": "C",
-    "Registration Code": 12347,
-    "enrollCount": 120,
-    "enrollMaximum": 150,
-    "Link": "https://www.ratemyprofessors.com/professor/954490",
-    "myPlanLink": "https://course-app-api.planning.sis.uw.edu/api/courses/AFRAM%20150/details",
-    "index": "AFRAM150"
+    if (!query) {
+      return NextResponse.json({ error: "Missing query parameter" }, { status: 400 });
+    }
 
+    console.log("Searching for courses with Course Code:", query);
+
+    // Prepare and execute SQL query
+    const statement = db.prepare(`
+      SELECT DISTINCT * FROM courses
+      WHERE "index" LIKE ? AND "Activity Type" = ?
+    `);
+    const results = statement.all(`%${query}%`, "lecture");
+
+    console.log(results)
+    return NextResponse.json(results);
+  } catch (error) {
+    console.error("Database error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
-];
-
-
-// Always return mock data without filtering
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
-  const query = searchParams.get("q")
-  console.log(query)
-  return NextResponse.json(mockClasses)
 }
-
-
-//Chia's thing will get a list of clases and return it
-
-//Need to look thorugh the database and get the classes that match the list that his spits back

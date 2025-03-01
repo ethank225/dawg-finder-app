@@ -3,7 +3,7 @@ import Database from "better-sqlite3";
 
 // Connect to SQLite database
 const path = require("path");
-const dbPath = path.join(__dirname, "backend", "data", "all_data.db");
+const dbPath = "/Users/ethan/Desktop/dawgfinder/backend/data/all_data.db";
 const db = new Database(dbPath, { fileMustExist: true });
 
 export async function GET(req) {

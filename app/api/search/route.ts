@@ -1,33 +1,39 @@
-import { NextResponse } from "next/server";
-import Database from "better-sqlite3";
+import { NextResponse } from 'next/server';
+import { getDbPool } from '@/app/lib/db.ts';
 
-// Connect to SQLite database
-const path = require("path");
-const dbPath = "./backend/data/all_data.db";
-const db = new Database(dbPath, { fileMustExist: true });
-
-export async function GET(req) {
+export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const query = searchParams.get("q");
+    const query = searchParams.get('q');
 
     if (!query) {
-      return NextResponse.json({ error: "Missing query parameter" }, { status: 400 });
+      return NextResponse.json({ error: 'Missing query parameter' }, { status: 400 });
     }
 
-    console.log("Searching for courses with Course Code:", query);
+    console.log('Searching for courses with Course Code:', query);
 
-    // Prepare and execute SQL query
-    const statement = db.prepare(`
-      SELECT DISTINCT * FROM courses
-      WHERE "index" LIKE ? AND "Activity Type" = ?
-    `);
-    const results = statement.all(`%${query}%`, "lecture");
+    // Get the database pool and connect to the database
+    const pool = getDbPool();
 
-    console.log(results)
-    return NextResponse.json(results);
+    // Get a client from the pool
+    const client = await pool.connect();
+
+    try {
+      // Query the database
+      const result = await client.query(
+        'SELECT DISTINCT * FROM courses WHERE "index" LIKE $1 AND "Activity Type" = $2',
+        [`%${query}%`, 'lecture']
+      );
+
+      console.log(result.rows);
+      return NextResponse.json(result.rows);
+    } finally {
+      // Release the client back to the pool
+      client.release();
+    }
+
   } catch (error) {
-    console.error("Database error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -1,42 +1,43 @@
-import { NextResponse } from "next/server";
-import Database from "better-sqlite3";
+import { NextResponse } from 'next/server';
+import { getDbPool } from '@/app/lib/db.ts';
 
-// Connect to SQLite database
-const path = require("path");
-const dbPath = "./backend/data/all_data.db";
-const db = new Database(dbPath, { fileMustExist: true });
 
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get("courseId")?.replace(/\s/g, ""); // Remove all spaces
+
+    if (!query) {
+      return NextResponse.json({ error: 'Missing query parameter' }, { status: 400 });
+    }
+
+    console.log('Searching for courses sections:', query);
+
+    const pool = getDbPool();
+    const client = await pool.connect();
+
+
     const lectureId = query.slice(-1); // Extract the last character
     const updatedQuery = query.slice(0, -1); // Remove the last character
 
     console.log("Lecture ID:", lectureId);
     console.log("Updated Query:", updatedQuery);
 
-
     if (!lectureId) {
       return NextResponse.json({ error: "Invalid courseId" }, { status: 400 });
     }
 
-    // Prepare and execute SQL query
-    const statement = db.prepare(`
-      SELECT DISTINCT * FROM courses
-      WHERE "index" = ? AND substr("Section", 1, 1) = ? AND "Activity Type" = ?
-    `);
+    // Query PostgreSQL
+    const results = await client.query(
+      `SELECT DISTINCT * FROM courses WHERE "index" = $1 AND LEFT("Section", 1) = $2 AND "Activity Type" = $3`,
+      [updatedQuery, lectureId, "quiz"]
+    );
+    client.release();
 
-    const results = statement.all(updatedQuery, lectureId, "quiz"); // Ensures first character of "Section" matches lectureId
-
-    console.log("Results:", results);
-    return NextResponse.json(results);
+    console.log("Results:", results.rows);
+    return NextResponse.json(results.rows);
   } catch (error) {
     console.error("Database error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
-
-
-
-

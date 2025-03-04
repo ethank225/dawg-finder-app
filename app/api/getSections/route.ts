@@ -1,41 +1,39 @@
 import { NextResponse } from 'next/server';
 import { getDbPool } from '@/app/lib/db.ts';
 
-
-export async function GET(req) {
+export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const query = searchParams.get("courseId")?.replace(/\s/g, ""); // Remove all spaces
+    const courseCode = searchParams.get("courseCode")?.trim();
+    const section = searchParams.get("section")?.trim();
+    const term = searchParams.get("term")?.trim();
 
-    if (!query) {
-      return NextResponse.json({ error: 'Missing query parameter' }, { status: 400 });
+    if (!courseCode || !section || !term) {
+      return NextResponse.json({ error: 'Missing query parameters' }, { status: 400 });
     }
 
-    console.log('Searching for courses sections:', query);
+    console.log('Searching for course sections:', { courseCode, section, term });
 
     const pool = getDbPool();
     const client = await pool.connect();
 
+    try {
+      // Query PostgreSQL (handling `Terms` stored as an array)
+      const sectionPattern = `${section}_`; // Ensure exactly one more character after "A"
 
-    const lectureId = query.slice(-1); // Extract the last character
-    const updatedQuery = query.slice(0, -1); // Remove the last character
-
-    console.log("Lecture ID:", lectureId);
-    console.log("Updated Query:", updatedQuery);
-
-    if (!lectureId) {
-      return NextResponse.json({ error: "Invalid courseId" }, { status: 400 });
+      const results = await client.query(
+        `SELECT DISTINCT *
+         FROM courses
+         WHERE "Course Code" = $1
+         AND "Term" = $3
+         AND "Section" LIKE $2
+         AND LENGTH("Section") = 2`,
+        [courseCode, sectionPattern, term]
+      );
+      return NextResponse.json(results.rows);
+    } finally {
+      client.release(); // Ensure client is always released
     }
-
-    // Query PostgreSQL
-    const results = await client.query(
-      `SELECT DISTINCT * FROM courses WHERE "index" = $1 AND LEFT("Section", 1) = $2 AND "Activity Type" = $3`,
-      [updatedQuery, lectureId, "quiz"]
-    );
-    client.release();
-
-    console.log("Results:", results.rows);
-    return NextResponse.json(results.rows);
   } catch (error) {
     console.error("Database error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

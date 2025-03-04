@@ -97,27 +97,43 @@ export default function Home() {
 
   //Handle when you click on an event
   const handleClassClick = async (classItem: any) => {
-    const courseCode = classItem["Course Code"];
-    const courseSection = classItem.Section;
-    const query = `${courseCode}${courseSection}`;
+    if (
+      !classItem ||
+      !classItem["Course Code"] ||
+      !classItem.Section ||
+      !classItem.Term
+    ) {
+      console.error("Invalid classItem:", classItem);
+      return;
+    }
 
-    console.log("Fetching sections for:", query);
+    const courseCode = encodeURIComponent(classItem["Course Code"].trim());
+    const courseSection = encodeURIComponent(classItem.Section.trim());
+    const courseQuarter = encodeURIComponent(classItem.Term.trim());
 
-    // Set selected class without modifying sections
-    setSelectedClass(classItem);
-    setSections([]); // Clear previous sections
-    setIsLoading(true);
+    // Construct query string with separate parameters
+    const queryString = `courseCode=${courseCode}&section=${courseSection}&term=${courseQuarter}`;
+    console.log("Fetching sections for:", queryString);
 
     try {
-      const response = await fetch(`/api/getSections?courseId=${query}`);
+      setSelectedClass(classItem);
+
+      // Clear previous sections only if classItem changes
+      setSections((prevSections) =>
+        prevSections.length > 0 ? [] : prevSections
+      );
+
+      setIsLoading(true);
+
+      const response = await fetch(`/api/getSections?${queryString}`);
       if (!response.ok) {
-        throw new Error("Error fetching sections");
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const data = await response.json();
-      setSections(Array.isArray(data) ? data : []); // Store sections separately
+      setSections(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching sections:", error);
+      console.error("Error fetching sections:", error.message || error);
     } finally {
       setIsLoading(false);
     }

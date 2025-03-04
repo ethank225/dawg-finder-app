@@ -63,16 +63,10 @@ export function InstructorProfile({
           onValueChange={setActiveTab}
           className="w-full"
         >
-          <div className="px-6 border-b">
-            <TabsList className="w-full justify-start h-12 bg-transparent p-0 gap-8">
-              <TabsTrigger value="evaluations">Evaluations</TabsTrigger>
-              <TabsTrigger value="courses">Courses</TabsTrigger>
-            </TabsList>
-          </div>
 
           {/* Evaluations Tab */}
           <TabsContent value="evaluations" className="p-6">
-            
+
             {evaluationData && (
               <div className="grid grid-cols-2 gap-4">
                 {/* Instructor Rating */}

@@ -1,129 +1,152 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { motion } from "framer-motion"
-import CourseCard from "@/components/ui/course-card"
-import { InstructorProfile } from "@/components/ui/instructor-profile" // Import it here
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { motion } from "framer-motion";
+import CourseCard from "@/components/ui/course-card";
+import { InstructorProfile } from "@/components/ui/instructor-profile"; // Import it here
 
-import { BookOpen, GraduationCap, Clock, Calendar, Building2, Star } from "lucide-react"
-import RechartsBarChart from "@/components/ui/RechartsBarChart"
+import {
+  BookOpen,
+  GraduationCap,
+  Clock,
+  Calendar,
+  Building2,
+  Star,
+} from "lucide-react";
+import RechartsBarChart from "@/components/ui/RechartsBarChart";
 
-import { Badge } from "@/components/ui/badge"
+// Remove Badge import since we're not using it anymore
+// import { Badge } from "@/components/ui/badge"
 
 export default function Home() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [searchPerformed, setSearchPerformed] = useState(false)
-  const [selectedClass, setSelectedClass] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [searchResult, setSearchResult] = useState<any[]>([]) // Add this state
-  const [sections, setSections] = useState<any[]>([])
-  const [open, setOpen] = useState(false)
-  const [selectedInstructor, setSelectedInstructor] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchPerformed, setSearchPerformed] = useState(false);
+  const [selectedClass, setSelectedClass] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchResult, setSearchResult] = useState<any[]>([]); // Add this state
+  const [sections, setSections] = useState<any[]>([]);
+  const [open, setOpen] = useState(false);
+  const [selectedInstructor, setSelectedInstructor] = useState<string | null>(
+    null
+  );
 
   function getRatingInfo(rating: number) {
     if (rating >= 4.5) {
-      return { label: "Excellent", style: { backgroundColor: "#22c55e" } } // Tailwind green-500
+      return { label: "Excellent", style: { backgroundColor: "#22c55e" } }; // Tailwind green-500
     } else if (rating >= 3.5) {
-      return { label: "Good", style: { backgroundColor: "#84cc16" } } // Tailwind lime-500
+      return { label: "Good", style: { backgroundColor: "#84cc16" } }; // Tailwind lime-500
     } else if (rating >= 2.5) {
-      return { label: "Average", style: { backgroundColor: "#fde047" } } // Tailwind yellow-300
-    } else if (rating >= 0) {
-      return { label: "None", style: { backgroundColor: "#d1d5db" } } // Tailwind gray-400
+      return { label: "Average", style: { backgroundColor: "#fde047" } }; // Tailwind yellow-300
+    } else if (rating > 0) {
+      return { label: "Bad", style: { backgroundColor: "#d1d5db" } }; // Tailwind gray-400
+    } else if (rating == 0) {
+      return { label: "None", style: { backgroundColor: "#d1d5db" } }; // Tailwind gray-400
     } else {
-      return { label: "Invalid", style: { backgroundColor: "#ef4444" } } // Tailwind red-500 (for negative or null values)
+      return { label: "None", style: { backgroundColor: "#ef4444" } }; // Tailwind red-500 (for negative or null values)
     }
   }
 
   function getDifficultyInfo(rating: number) {
     if (rating >= 4.5) {
-      return { label: "Hard", style: { backgroundColor: "#ef4444" } } // Tailwind red-500
+      return { label: "Hard", style: { backgroundColor: "#ef4444" } }; // Tailwind red-500
     } else if (rating >= 3.5) {
-      return { label: "Average", style: { backgroundColor: "#facc15" } } // Tailwind yellow-400
-    } else if (rating >= 2.5) {
-      return { label: "Easy", style: { backgroundColor: "#86efac" } } // Tailwind green-300
-    } else if (rating >= 0) {
-      return { label: "None", style: { backgroundColor: "#d1d5db" } } // Tailwind gray-400
+      return { label: "Average", style: { backgroundColor: "#facc15" } }; // Tailwind yellow-400
+    } else if (rating >= 1.5) {
+      return { label: "Easy", style: { backgroundColor: "#86efac" } }; // Tailwind green-300
+    } else if (rating > 0) {
+      return { label: "Very Easy", style: { backgroundColor: "#d1d5db" } }; // Tailwind gray-400
+    } else if (rating == 0) {
+      return { label: "None", style: { backgroundColor: "#d1d5db" } }; // Tailwind gray-400
     } else {
-      return { label: "Invalid", style: { backgroundColor: "#ef4444" } } // Tailwind red-500 (for negative or null values)
+      return { label: "None", style: { backgroundColor: "#ef4444" } }; // Tailwind red-500 (for negative or null values)
     }
   }
 
   //Handles the search query
   const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`)
+      const response = await fetch(
+        `/api/search?q=${encodeURIComponent(searchQuery)}`
+      );
       // Check if response body is empty
-      const textData = await response.text()
+      const textData = await response.text();
       if (!textData) {
-        throw new Error("Empty response from server")
+        throw new Error("Empty response from server");
       }
-      const data = JSON.parse(textData) // Manually parse JSON
+      const data = JSON.parse(textData); // Manually parse JSON
       if (!response.ok) {
-        throw new Error(data.message || "Error fetching data")
+        throw new Error(data.message || "Error fetching data");
       }
       // Save API results
-      setSearchResult(data)
-      setSearchPerformed(true)
+      setSearchResult(data);
+      setSearchPerformed(true);
     } catch (error) {
-      console.error("Search error:", error)
+      console.error("Search error:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   //Handle when you click on an event
   const handleClassClick = async (classItem: any) => {
-    if (!classItem || !classItem["Course Code"] || !classItem.Section || !classItem.Term) {
-      console.error("Invalid classItem:", classItem)
-      return
+    if (
+      !classItem ||
+      !classItem["Course Code"] ||
+      !classItem.Section ||
+      !classItem.Term
+    ) {
+      console.error("Invalid classItem:", classItem);
+      return;
     }
 
-    const courseCode = encodeURIComponent(classItem["Course Code"].trim())
-    const courseSection = encodeURIComponent(classItem.Section.trim())
-    const courseQuarter = encodeURIComponent(classItem.Term.trim())
+    const courseCode = encodeURIComponent(classItem["Course Code"].trim());
+    const courseSection = encodeURIComponent(classItem.Section.trim());
+    const courseQuarter = encodeURIComponent(classItem.Term.trim());
 
     // Construct query string with separate parameters
-    const queryString = `courseCode=${courseCode}&section=${courseSection}&term=${courseQuarter}`
-    console.log("Fetching sections for:", queryString)
+    const queryString = `courseCode=${courseCode}&section=${courseSection}&term=${courseQuarter}`;
+    console.log("Fetching sections for:", queryString);
 
     try {
-      setSelectedClass(classItem)
+      setSelectedClass(classItem);
 
       // Clear previous sections only if classItem changes
-      setSections((prevSections) => (prevSections.length > 0 ? [] : prevSections))
+      setSections((prevSections) =>
+        prevSections.length > 0 ? [] : prevSections
+      );
 
-      setIsLoading(true)
+      setIsLoading(true);
 
-      const response = await fetch(`/api/getSections?${queryString}`)
+      const response = await fetch(`/api/getSections?${queryString}`);
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json()
-      setSections(Array.isArray(data) ? data : [])
+      const data = await response.json();
+      setSections(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching sections:", error.message || error)
+      console.error("Error fetching sections:", error.message || error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const convertTo12Hour = (time: any) => {
-    if (!time) return "Not Available" // Handle null or undefined
-    const [hours, minutes] = time.split(":")
+    if (!time) return "Not Available"; // Handle null or undefined
+    const [hours, minutes] = time.split(":");
     return new Date(0, 0, 0, hours, minutes).toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
-    })
-  }
+    });
+  };
 
   return (
     <main className="min-h-screen bg-white text-[#4b2e83]">
@@ -131,7 +154,9 @@ export default function Home() {
         <motion.div
           initial={{ y: searchPerformed ? -50 : 0 }}
           animate={{ y: 0 }}
-          className={`text-center ${searchPerformed ? "mb-8" : "h-screen flex flex-col justify-center"}`}
+          className={`text-center ${
+            searchPerformed ? "mb-8" : "h-screen flex flex-col justify-center"
+          }`}
         >
           <motion.h1
             initial={{ scale: 1 }}
@@ -140,7 +165,10 @@ export default function Home() {
           >
             DawgFinder
           </motion.h1>
-          <form onSubmit={handleSearch} className="max-w-6xl mx-auto w-full px-4">
+          <form
+            onSubmit={handleSearch}
+            className="max-w-6xl mx-auto w-full px-4"
+          >
             <div className="relative">
               <Input
                 type="text"
@@ -160,10 +188,17 @@ export default function Home() {
         </motion.div>
 
         {isLoading && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-6xl mx-auto px-4 mt-8">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="max-w-6xl mx-auto px-4 mt-8"
+          >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-[#4b2e83]/5 rounded-xl p-6 border-2 border-[#4b2e83]/10">
+                <div
+                  key={i}
+                  className="bg-[#4b2e83]/5 rounded-xl p-6 border-2 border-[#4b2e83]/10"
+                >
                   <div className="animate-pulse">
                     <div className="flex items-start justify-between mb-4 pb-4">
                       <div className="space-y-3">
@@ -175,12 +210,18 @@ export default function Home() {
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div className="space-y-3">
                         {[...Array(3)].map((_, j) => (
-                          <div key={j} className="h-6 bg-[#4b2e83]/10 rounded w-full" />
+                          <div
+                            key={j}
+                            className="h-6 bg-[#4b2e83]/10 rounded w-full"
+                          />
                         ))}
                       </div>
                       <div className="space-y-3">
                         {[...Array(3)].map((_, j) => (
-                          <div key={j} className="h-6 bg-[#4b2e83]/10 rounded w-full" />
+                          <div
+                            key={j}
+                            className="h-6 bg-[#4b2e83]/10 rounded w-full"
+                          />
                         ))}
                       </div>
                     </div>
@@ -214,13 +255,19 @@ export default function Home() {
                       <h2 className="text-3xl font-bold text-[#4b2e83]">
                         {classItem["Course Code"]} {classItem.Section}
                       </h2>
-                      <span className="text-[#4b2e83]/70 text-lg">({classItem.Credits} cr)</span>
+                      <span className="text-[#4b2e83]/70 text-lg">
+                        ({classItem.Credits} cr)
+                      </span>
                     </div>
-                    <h3 className="text-xl font-medium text-[#4b2e83]/80 mt-1">{classItem["Course Title"]}</h3>
+                    <h3 className="text-xl font-medium text-[#4b2e83]/80 mt-1">
+                      {classItem["Course Title"]}
+                    </h3>
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-[#4b2e83]/70">Average GPA</div>
-                    <div className="text-2xl font-bold text-[#4b2e83]">{classItem.mean?.toFixed(2) ?? ""}</div>
+                    <div className="text-2xl font-bold text-[#4b2e83]">
+                      {classItem.mean?.toFixed(2) ?? ""}
+                    </div>
                   </div>
                 </div>
 
@@ -231,7 +278,8 @@ export default function Home() {
                     <div className="flex items-center gap-2 text-[#4b2e83]/80">
                       <Clock className="w-4 h-4" />
                       <span>
-                        {classItem.Days} {convertTo12Hour(classItem.Start)} - {convertTo12Hour(classItem.End)}
+                        {classItem.Days} {convertTo12Hour(classItem.Start)} -{" "}
+                        {convertTo12Hour(classItem.End)}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-[#4b2e83]/80">
@@ -243,12 +291,17 @@ export default function Home() {
                       <span>{classItem.Term}</span>
                     </div>
                     <div className="text-[#4b2e83]/80">
-                      Enrollment: {classItem.enrollCount}/{classItem.enrollMaximum}
+                      Enrollment: {classItem.enrollCount}/
+                      {classItem.enrollMaximum}
                       <div className="w-full bg-[#4b2e83]/10 rounded-full h-2 mt-1">
                         <div
                           className="bg-[#4b2e83] h-2 rounded-full"
                           style={{
-                            width: `${(classItem.enrollCount / classItem.enrollMaximum) * 100}%`,
+                            width: `${
+                              (classItem.enrollCount /
+                                classItem.enrollMaximum) *
+                              100
+                            }%`,
                           }}
                         />
                       </div>
@@ -262,14 +315,20 @@ export default function Home() {
                         <span>Rating:</span>
                         <div className="flex items-center gap-1">
                           {(() => {
-                            const { label: ratingLabel, style: ratingClass } = getRatingInfo(classItem.Rating ?? 0) // UPDATED LINE
+                            const { label: ratingLabel, style: ratingStyle } =
+                              getRatingInfo(classItem.Rating ?? 0);
                             return (
-                              <Badge className={`${ratingClass} text-white px-2 py-0.5 text-xs rounded-full`}>
+                              <div
+                                className="text-black font-bold px-2 py-0.5 text-xs rounded-full"
+                                style={ratingStyle}
+                              >
                                 {ratingLabel}
-                              </Badge>
-                            )
+                              </div>
+                            );
                           })()}
-                          <span className="text-sm">({classItem.Rating?.toFixed(1) ?? "N/A"}/5)</span>
+                          <span className="text-sm">
+                            ({classItem.Rating?.toFixed(1) ?? "N/A"}/5)
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -281,14 +340,20 @@ export default function Home() {
                         <span>Difficulty:</span>
                         <div className="flex items-center gap-1">
                           {(() => {
-                            const { label: ratingLabel, style: ratingClass } = getDifficultyInfo(classItem.Rating ?? 0)
+                            const { label: ratingLabel, style: ratingStyle } =
+                              getDifficultyInfo(classItem.Difficulty ?? 0);
                             return (
-                              <Badge className={`${ratingClass} text-white px-2 py-0.5 text-xs rounded-full`}>
+                              <div
+                                className="text-black font-bold px-2 py-0.5 text-xs rounded-full"
+                                style={ratingStyle}
+                              >
                                 {ratingLabel}
-                              </Badge>
-                            )
+                              </div>
+                            );
                           })()}
-                          <span className="text-sm">({classItem.Difficulty?.toFixed(1) ?? "N/A"}/5)</span>
+                          <span className="text-sm">
+                            ({classItem.Difficulty?.toFixed(1) ?? "N/A"}/5)
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -300,14 +365,19 @@ export default function Home() {
                 </div>
 
                 {/* Description */}
-                <p className="text-[#4b2e83]/70 text-sm line-clamp-2 mt-2">{classItem["Course Description"]}</p>
+                <p className="text-[#4b2e83]/70 text-sm line-clamp-2 mt-2">
+                  {classItem["Course Description"]}
+                </p>
               </motion.div>
             ))}
           </motion.div>
         )}
 
         {/* Class Details Dialog */}
-        <Dialog open={!!selectedClass} onOpenChange={() => setSelectedClass(null)}>
+        <Dialog
+          open={!!selectedClass}
+          onOpenChange={() => setSelectedClass(null)}
+        >
           <DialogContent className="bg-white text-[#4b2e83] border-2 border-[#4b2e83] max-w-4xl max-h-[90vh] overflow-y-auto ">
             {/* Course Overview */}
             <div className="mt-6 ">
@@ -318,7 +388,9 @@ export default function Home() {
 
                   {/* Available Sections */}
                   <div className="mt-8">
-                    <h3 className="font-semibold text-lg mb-4">Available Sections</h3>
+                    <h3 className="font-semibold text-lg mb-4">
+                      Available Sections
+                    </h3>
                     <div className="grid gap-4">
                       {sections?.map((section: any) => (
                         <div
@@ -328,38 +400,22 @@ export default function Home() {
                           <div className="grid md:grid-cols-2 gap-4">
                             <div className="space-y-3">
                               <div className="flex items-center justify-between">
-                                <span className="font-semibold text-lg">Section {section["Section"]}</span>
+                                <span className="font-semibold text-lg">
+                                  Section {section["Section"]}
+                                </span>
                                 <span className="text-sm bg-[#4b2e83]/10 px-2 py-1 rounded">
                                   SLN: {section["Registration Code"]}
                                 </span>
                               </div>
-                              <div className="flex items-center gap-2 text-[#4b2e83]/80">
-                                <GraduationCap className="w-4 h-4" />
-                                <button
-                                  onClick={() => {
-                                    console.log("Setting instructor:", section.Instructor)
-                                    setSelectedInstructor(section.Instructor) // Ensure correct instructor
-                                    setOpen(true)
-                                  }}
-                                  className="text-primary hover:underline font-medium flex items-center gap-1"
-                                >
-                                  {section.Instructor}
-                                </button>
-
-                                {open && selectedInstructor && (
-                                  <InstructorProfile instructor={selectedInstructor} open={open} setOpen={setOpen} />
-                                )}
-                                <span className="flex items-center gap-1 text-sm">
-                                  <Star className="w-3 h-3 fill-[#b7a57a] stroke-[#b7a57a]" />
-                                  {section.mean?.toFixed(2) ?? ""}
-                                </span>
-                              </div>
+                              <div className="flex items-center gap-2 text-[#4b2e83]/80"></div>
                             </div>
                             <div className="space-y-3">
                               <div className="flex items-center gap-2 text-[#4b2e83]/80">
                                 <Clock className="w-4 h-4" />
                                 <span>
-                                  {section["Days"]} {section["Start"]} - {section["End"]}
+                                  {section["Days"]}{" "}
+                                  {convertTo12Hour(section.Start)} -{" "}
+                                  {convertTo12Hour(section.End)}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2 text-[#4b2e83]/80">
@@ -367,12 +423,17 @@ export default function Home() {
                                 <span>{section["Building"]}</span>
                               </div>
                               <div className="text-[#4b2e83]/80">
-                                Enrollment: {section.enrollCount}/{section.enrollMaximum}
+                                Enrollment: {section.enrollCount}/
+                                {section.enrollMaximum}
                                 <div className="w-full bg-[#4b2e83]/10 rounded-full h-2 mt-1">
                                   <div
                                     className="bg-[#4b2e83] h-2 rounded-full"
                                     style={{
-                                      width: `${(section.enrollCount / section.enrollMaximum) * 100}%`,
+                                      width: `${
+                                        (section.enrollCount /
+                                          section.enrollMaximum) *
+                                        100
+                                      }%`,
                                     }}
                                   />
                                 </div>
@@ -390,6 +451,5 @@ export default function Home() {
         </Dialog>
       </div>
     </main>
-  )
+  );
 }
-

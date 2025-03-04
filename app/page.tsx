@@ -17,7 +17,11 @@ import {
   Calendar,
   Building2,
   Star,
+  ThumbsUp,
+  BarChart3
 } from "lucide-react";
+
+import { ChartNoAxesCombined } from 'lucide-react';
 import RechartsBarChart from "@/components/ui/RechartsBarChart";
 
 // Remove Badge import since we're not using it anymore
@@ -310,7 +314,7 @@ export default function Home() {
 
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-[#6b5a9e]">
-                      <Star className="h-5 w-5" />
+                      <ThumbsUp className="h-5 w-5" />
                       <div className="flex items-center gap-2">
                         <span>Rating:</span>
                         <div className="flex items-center gap-1">
@@ -335,7 +339,7 @@ export default function Home() {
 
                     {/* Professor Info */}
                     <div className="flex items-center gap-2 text-[#6b5a9e]">
-                      <BookOpen className="h-5 w-5" />
+                      <BarChart3 className="h-5 w-5" />
                       <div className="flex items-center gap-2">
                         <span>Difficulty:</span>
                         <div className="flex items-center gap-1">
@@ -358,7 +362,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-[#4b2e83]/80">
-                      <BookOpen className="w-4 h-4" />
+                      <BookOpen className="w-5 h-5" />
                       <span>{classItem["GenEd Requirements"]}</span>
                     </div>
                   </div>

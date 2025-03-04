@@ -9,14 +9,12 @@ import { motion } from "framer-motion";
 
 interface InstructorProfileProps {
   instructor: string;
-  title?: string;
   open: boolean;
   setOpen: (state: boolean) => void;
 }
 
 export function InstructorProfile({
   instructor = "Brett Wortzman",
-  title = "Lecturer, Computer Science",
   open,
   setOpen,
 }: InstructorProfileProps) {
@@ -56,9 +54,6 @@ export function InstructorProfile({
             <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
               {instructor}
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
-              {title}
-            </p>
           </DialogHeader>
         </div>
 
@@ -77,6 +72,7 @@ export function InstructorProfile({
 
           {/* Evaluations Tab */}
           <TabsContent value="evaluations" className="p-6">
+            
             {evaluationData && (
               <div className="grid grid-cols-2 gap-4">
                 {/* Instructor Rating */}
@@ -133,7 +129,7 @@ export function InstructorProfile({
             {evaluationData && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }} className="mt-8">
                 <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 text-center">
-                  Evaluation Metrics
+                  Available Evaluation Metrics
                 </h3>
                 <div className="space-y-5">
                   {[
@@ -143,7 +139,8 @@ export function InstructorProfile({
                     { name: "Instructor Effectiveness", value: evaluationData.instructors_effectiveness_median },
                     { name: "Instructor Interest", value: evaluationData.instuctors_interest_median },
                     { name: "Course Content", value: evaluationData.the_course_content_median },
-                  ].map((metric, index) => (
+                  ].filter((metric) => metric.value > 0)
+                  .map((metric, index) => (
                     <motion.div key={index} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: 0.1 * index }}>
                       <div className="flex justify-between mb-1.5">
                         <span className="text-sm font-medium text-slate-700">{metric.name}</span>

@@ -53,7 +53,7 @@ export function InstructorProfile({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto p-0 gap-0 rounded-xl border shadow-lg">
-        <div className="bg-gradient-to-r from-[#4e3f7a] to-[#3b2d63] dark:from-[#2a1f4d] dark:to-[#1f1636] p-6 rounded-t-xl shadow-lg relative">
+        <div className="bg-white p-6 rounded-t-xl shadow-lg relative">
           <DialogHeader>
             <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold text-slate-800 dark:text-white">

@@ -49,17 +49,7 @@ TABLE_NAME = "courses"  # The table you store course data in
 session = requests.Session()  # Use a session to maintain cookies
 
 # Load environment variables from .env.local
-load_dotenv(".env.local")
 
-# Now DATABASE_URL will be correctly read from .env.local
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-if not DATABASE_URL:
-    raise ValueError("❌ DATABASE_URL is not set! Make sure .env.local exists and is properly formatted.")
-
-# Ensure compatibility with SQLAlchemy (Heroku URLs sometimes use `postgres://`)
-if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 
 def get_links(url, search, max_retries=3):
@@ -305,16 +295,20 @@ def export_to_heroku(df):
 
 
 
+
 if __name__ == "__main__":
     class_info_grade = main()  # 1) Fetch & process new data
     print("✅ Hourly update complete!")
+    #Get DATABASE_URL from the environment
+    DATABASE_URL = os.getenv("DATABASE_URL")
 
-    conn = sqlite3.connect("all_data.db")
-    if isinstance(class_info_grade, pd.DataFrame):  # Ensure it's a DataFrame
-        class_info_grade.to_sql("class_info_grade", conn, if_exists="replace", index=False)
-    conn.close()
-    print("✅ Data saved to SQLite database!")
+    # Ensure compatibility with SQLAlchemy (Heroku sometimes uses `postgres://`)
+    if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 
-    # 3) Now export to Heroku Postgrxes
+    #3) Now export to Heroku Postgrxes
     export_to_heroku(class_info_grade)
+
+
+

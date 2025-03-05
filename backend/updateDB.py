@@ -188,7 +188,7 @@ def main():
     # ----- Additional Data Merging for Grades -----
 
     # Now set up class_data (Grades)
-    class_data = pd.read_json('/Users/ethan/Desktop/dawgfinder/backend/data/grade_catalog.json').T
+    class_data = pd.read_json('backend/data/grade_catalog.json').T
     coi_df = class_data['coi_data'].apply(pd.Series)
     gpa_df = class_data['gpa_distro'].apply(pd.Series)
 
@@ -252,7 +252,7 @@ def main():
     class_info_grade['prefix'] = class_info_grade['index'].str[:-3]
 
     # Fuzzy matching with RMP data
-    rmp_data = pd.read_json('/Users/ethan/Desktop/dawgfinder/backend/data/rmp_info.json')
+    rmp_data = pd.read_json('backend/data/rmp_info.json')
     class_info_grade['Instructor'] = class_info_grade['Instructor'].astype(str).fillna("")
     rmp_data['Name'] = rmp_data['Name'].astype(str).fillna("")
 
@@ -288,7 +288,7 @@ def main():
     class_info_grade_rmp, match_df = fuzzy_merge(class_info_grade, rmp_data, "Instructor", "Name", threshold=95)
 
     # 2nd fuzzy merge with course evaluations
-    course_eval_ratings = pd.read_json('/Users/ethan/Desktop/dawgfinder/backend/data/course_eval_ratings.json')
+    course_eval_ratings = pd.read_json('backend/data/course_eval_ratings.json')
     merged, match_df = fuzzy_merge(class_info_grade_rmp, course_eval_ratings, "Instructor", "Instructor Name", threshold=95)
 
     return merged
@@ -314,12 +314,15 @@ if __name__ == "__main__":
     print("✅ Hourly update complete!")
     #Get DATABASE_URL from the environment
     DATABASE_URL = os.getenv("DATABASE_URL")
+    try:
+        conn = sqlite3.connect("/Users/ethan/Desktop/all_data.db")
+        cursor = conn.cursor()
 
-    conn = sqlite3.connect("/Users/ethan/Desktop/all_data.db")
-    cursor = conn.cursor()
-
-    # Create table (modify columns based on your DataFrame structure)
-    class_info_grade.to_sql("courses", conn, if_exists="replace", index=False)
+        # Create table (modify columns based on your DataFrame structure)
+        class_info_grade.to_sql("courses", conn, if_exists="replace", index=False)
+        conn.close()
+    except:
+        pass
 
     # Ensure compatibility with SQLAlchemy (Heroku sometimes uses `postgres://`)
     if DATABASE_URL and DATABASE_URL.startswith("postgres://"):

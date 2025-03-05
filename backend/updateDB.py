@@ -52,7 +52,7 @@ session = requests.Session()  # Use a session to maintain cookies
 
 
 
-def get_links(url, search, max_retries=3):
+def get_links(url, search, max_retries=10):
     session = requests.Session()  # Persistent connection
     retries = 0
     while retries < max_retries:

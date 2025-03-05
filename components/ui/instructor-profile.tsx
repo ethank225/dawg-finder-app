@@ -126,30 +126,57 @@ export function InstructorProfile({
                           transition={{ staggerChildren: 0.1 }}
                           className="flex justify-center gap-1"
                         >
-                          {[1, 2, 3, 4, 5].map((star, index) => (
-                            <motion.div
-                              key={star}
-                              variants={{
-                                hidden: { opacity: 0, y: 10 },
-                                visible: { opacity: 1, y: 0 },
-                              }}
-                              transition={{ duration: 0.3, delay: index * 0.1 }}
-                            >
-                              <Star
-                                className="h-6 w-6"
-                                fill={
-                                  star <= Math.round(evaluationData.Rating)
-                                    ? "#10b981"
-                                    : "#e5e7eb"
-                                }
-                                stroke={
-                                  star <= Math.round(evaluationData.Rating)
-                                    ? "#10b981"
-                                    : "#e5e7eb"
-                                }
-                              />
-                            </motion.div>
-                          ))}
+                          {[1, 2, 3, 4, 5].map((star, index) => {
+                            const roundedRating = evaluationData.Rating;
+                            const fullStar = star <= Math.floor(roundedRating);
+                            const halfStar =
+                              star === Math.ceil(roundedRating) && !fullStar;
+                            const gradientId = `half-fill-${index}`; // Unique gradient ID for each star
+
+                            return (
+                              <motion.div
+                                key={star}
+                                variants={{
+                                  hidden: { opacity: 0, y: 10 },
+                                  visible: { opacity: 1, y: 0 },
+                                }}
+                                transition={{
+                                  duration: 0.3,
+                                  delay: index * 0.1,
+                                }}
+                              >
+                                <Star
+                                  className="h-6 w-6"
+                                  fill={
+                                    fullStar
+                                      ? "#10b981"
+                                      : halfStar
+                                      ? `url(#${gradientId})` // ✅ Correct reference
+                                      : "#e5e7eb"
+                                  }
+                                  stroke={
+                                    fullStar || halfStar ? "#10b981" : "#e5e7eb"
+                                  }
+                                />
+                                {halfStar && (
+                                  <svg width="0" height="0">
+                                    <defs>
+                                      <linearGradient id={gradientId}>
+                                        <stop
+                                          offset="50%"
+                                          stopColor="#10b981"
+                                        />
+                                        <stop
+                                          offset="50%"
+                                          stopColor="#e5e7eb"
+                                        />
+                                      </linearGradient>
+                                    </defs>
+                                  </svg>
+                                )}
+                              </motion.div>
+                            );
+                          })}
                         </motion.div>
                       </CardContent>
                     </Card>
@@ -175,30 +202,57 @@ export function InstructorProfile({
                           transition={{ staggerChildren: 0.1 }}
                           className="flex justify-center gap-1"
                         >
-                          {[1, 2, 3, 4, 5].map((star, index) => (
-                            <motion.div
-                              key={star}
-                              variants={{
-                                hidden: { opacity: 0, y: 10 },
-                                visible: { opacity: 1, y: 0 },
-                              }}
-                              transition={{ duration: 0.3, delay: index * 0.1 }}
-                            >
-                              <Star
-                                className="h-6 w-6"
-                                fill={
-                                  star <= Math.round(evaluationData.Difficulty)
-                                    ? "#f43f5e"
-                                    : "#e5e7eb"
-                                }
-                                stroke={
-                                  star <= Math.round(evaluationData.Difficulty)
-                                    ? "#f43f5e"
-                                    : "#e5e7eb"
-                                }
-                              />
-                            </motion.div>
-                          ))}
+                          {[1, 2, 3, 4, 5].map((star, index) => {
+                            const roundedRating = evaluationData.Difficulty;
+                            const fullStar = star <= Math.floor(roundedRating);
+                            const halfStar =
+                              star === Math.ceil(roundedRating) && !fullStar;
+                            const gradientId = `half-fill-${index}`; // Unique gradient ID for each star
+
+                            return (
+                              <motion.div
+                                key={star}
+                                variants={{
+                                  hidden: { opacity: 0, y: 10 },
+                                  visible: { opacity: 1, y: 0 },
+                                }}
+                                transition={{
+                                  duration: 0.3,
+                                  delay: index * 0.1,
+                                }}
+                              >
+                                <Star
+                                  className="h-6 w-6"
+                                  fill={
+                                    fullStar
+                                      ? "#f43f5e"
+                                      : halfStar
+                                      ? `url(#${gradientId})` // ✅ Correct reference
+                                      : "#e5e7eb"
+                                  }
+                                  stroke={
+                                    fullStar || halfStar ? "#f43f5e" : "#e5e7eb"
+                                  }
+                                />
+                                {halfStar && (
+                                  <svg width="0" height="0">
+                                    <defs>
+                                      <linearGradient id={gradientId}>
+                                        <stop
+                                          offset="50%"
+                                          stopColor="#f43f5e"
+                                        />
+                                        <stop
+                                          offset="50%"
+                                          stopColor="#e5e7eb"
+                                        />
+                                      </linearGradient>
+                                    </defs>
+                                  </svg>
+                                )}
+                              </motion.div>
+                            );
+                          })}
                         </motion.div>
                       </CardContent>
                     </Card>

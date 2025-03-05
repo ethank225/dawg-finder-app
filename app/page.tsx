@@ -41,33 +41,33 @@ export default function Home() {
 
   function getRatingInfo(rating: number) {
     if (rating >= 4.5) {
-      return { label: "Excellent", style: { backgroundColor: "#22c55e" } }; // Tailwind green-500
+      return { label: "Excellent", style: { backgroundColor: "#22c55e" } };
     } else if (rating >= 3.5) {
-      return { label: "Good", style: { backgroundColor: "#84cc16" } }; // Tailwind lime-500
+      return { label: "Good", style: { backgroundColor: "#84cc16" } };
     } else if (rating >= 2.5) {
-      return { label: "Average", style: { backgroundColor: "#fde047" } }; // Tailwind yellow-300
+      return { label: "Average", style: { backgroundColor: "#fde047" } };
     } else if (rating > 0) {
-      return { label: "Bad", style: { backgroundColor: "#ef4444" } }; // Tailwind Red
+      return { label: "Bad", style: { backgroundColor: "#ef4444" } };
     } else if (rating == 0) {
-      return { label: "None", style: { backgroundColor: "#d1d5db" } }; // Tailwind gray-400
+      return { label: "None", style: { backgroundColor: "#d1d5db" } };
     } else {
-      return { label: "None", style: { backgroundColor: "#ef4444" } }; // Tailwind red-500 (for negative or null values)
+      return { label: "None", style: { backgroundColor: "#ef4444" } };
     }
   }
 
   function getDifficultyInfo(rating: number) {
     if (rating >= 4.5) {
-      return { label: "Hard", style: { backgroundColor: "#ef4444" } }; // Tailwind red-500
+      return { label: "Hard", style: { backgroundColor: "#ef4444" } };
     } else if (rating >= 3.5) {
-      return { label: "Medium", style: { backgroundColor: "#facc15" } }; // Tailwind yellow-400
+      return { label: "Medium", style: { backgroundColor: "#facc15" } };
     } else if (rating >= 1.5) {
-      return { label: "Easy", style: { backgroundColor: "#86efac" } }; // Tailwind green-300
+      return { label: "Easy", style: { backgroundColor: "#22c55e" } };
     } else if (rating > 0) {
-      return { label: "Very Easy", style: { backgroundColor: "#8BC34A" } }; // Tailwind gray-400
+      return { label: "Very Easy", style: { backgroundColor: "#8BC34A" } };
     } else if (rating == 0) {
-      return { label: "None", style: { backgroundColor: "#d1d5db" } }; // Tailwind gray-400
+      return { label: "None", style: { backgroundColor: "#d1d5db" } };
     } else {
-      return { label: "None", style: { backgroundColor: "#ef4444" } }; // Tailwind red-500 (for negative or null values)
+      return { label: "None", style: { backgroundColor: "#ef4444" } };
     }
   }
 

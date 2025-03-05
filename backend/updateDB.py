@@ -12,6 +12,7 @@ import sqlite3
 import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
+import re
 
 # Load environment variables
 load_dotenv()

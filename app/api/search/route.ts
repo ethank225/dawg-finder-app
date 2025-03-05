@@ -21,8 +21,8 @@ export async function GET(req: Request) {
     try {
       // Query the database
       const result = await client.query(
-        'SELECT DISTINCT * FROM courses WHERE "index" LIKE $1 AND "Activity Type" = $2',
-        [`%${query}%`, 'lecture']
+        'SELECT DISTINCT * FROM courses WHERE "Clean_Course_Code" ILIKE $1',
+        [`%${query}%`]
       );
 
       console.log(result.rows);

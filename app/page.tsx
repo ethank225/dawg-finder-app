@@ -102,20 +102,16 @@ export default function Home() {
   const handleClassClick = async (classItem: any) => {
     if (
       !classItem ||
-      !classItem["Course Code"] ||
-      !classItem.Section ||
-      !classItem.Term
+      !classItem["UUID"]
     ) {
       console.error("Invalid classItem:", classItem);
       return;
     }
 
-    const courseCode = encodeURIComponent(classItem["Course Code"].trim());
-    const courseSection = encodeURIComponent(classItem.Section.trim());
-    const courseQuarter = encodeURIComponent(classItem.Term.trim());
+    const UUID = encodeURIComponent(classItem["UUID"])
 
     // Construct query string with separate parameters
-    const queryString = `courseCode=${courseCode}&section=${courseSection}&term=${courseQuarter}`;
+    const queryString = `UUID=${UUID}`;
     console.log("Fetching sections for:", queryString);
 
     try {

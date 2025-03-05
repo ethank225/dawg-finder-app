@@ -29,7 +29,8 @@ export async function GET(req: Request) {
         "instructors_contribution_median",
         "instructors_effectiveness_median",  -- ✅ Fixed missing "s"
         "instuctors_interest_median",        -- ✅ Fixed typo
-        "the_course_content_median"
+        "the_course_content_median",
+        "Link"
       FROM courses
       WHERE "Instructor" ILIKE $1
     `, [teacherId]); // ✅ Use parameterized query

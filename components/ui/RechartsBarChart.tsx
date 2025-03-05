@@ -50,7 +50,7 @@ const RechartsBarChart = ({ selectedClass }: { selectedClass: any }) => {
   };
 
   return (
-    <div className="bg-white p-6 shadow-lg p-6 rounded-xl mb-8 border-b">
+    <div className="bg-white p-6 shadow-lg p-6 rounded-xl mb-8 border-2">
       <h2 className="text-2xl font-bold text-[#4b2e83] mb-2">
         Course Grade Distribution
       </h2>
@@ -83,10 +83,12 @@ const RechartsBarChart = ({ selectedClass }: { selectedClass: any }) => {
             label={{
               value: "Number of Students",
               angle: -90,
-              position: "middle",
-              offset: -10,
+              position: "insideMiddle",
+              dx: -40
+
             }}
             domain={[0, Math.max(...chartData.map((d) => d.students)) + 10]} // Adjust Y-axis
+
           />
 
           {/* Custom Tooltip (Matches Your Image) */}

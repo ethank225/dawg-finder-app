@@ -53,7 +53,7 @@ export default function CourseCard({ courseData }: CourseCardProps) {
 
   return (
     <>
-      <Card className="bg-white p-6 shadow-lg p-6 rounded-xl mb-8">
+      <Card className="bg-white p-6 shadow-lg p-6 rounded-xl mb-8 border-2">
         <CardHeader className="border-b pb-3">
           <div className="flex justify-between items-start">
             <div>
@@ -104,7 +104,7 @@ export default function CourseCard({ courseData }: CourseCardProps) {
 
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Requirements:</span>
-                  <Badge>{courseData["GenEd Requirements"] || "None"}</Badge>
+                  <Badge className = "bg-[#4b2e83]">{courseData["GenEd Requirements"] || "None"}</Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Quarters Offered:</span>
@@ -254,7 +254,7 @@ export default function CourseCard({ courseData }: CourseCardProps) {
                           (courseData.enrollCount / courseData.enrollMaximum) *
                           100
                         }%`,
-                        backgroundColor: "black",
+                        backgroundColor: "#4b2e83",
                       }}
                     />
                   </div>
@@ -281,7 +281,6 @@ export default function CourseCard({ courseData }: CourseCardProps) {
       {/* Instructor Profile Component */}
       <InstructorProfile
         instructor={courseData.Instructor}
-        courseData={courseData}
         open={open}
         setOpen={setOpen}
       />

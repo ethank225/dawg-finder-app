@@ -98,7 +98,7 @@ def fetch_course_details(url):
         course_data = response.json()
         # Extract course summary details
         data_list = []
-        course_description = course_data["courseSummaryDetails"].get("courseDescription", "No description available")
+        course_description = clean_text(course_data["courseSummaryDetails"].get("courseDescription", "No description available"))
 
         for institution in course_data.get("courseOfferingInstitutionList", []):
             campus = institution["name"]
@@ -138,6 +138,21 @@ def fetch_course_details(url):
     else:
         print(f"Request failed with status code {response.status_code}")
         return None
+
+def clean_text(text):
+    if pd.isna(text):  # Handle NaN values
+        return ""
+
+    soup = BeautifulSoup(text, "html.parser")
+
+    # Extract course numbers from the `data-text` attributes in <span> tags
+    for span in soup.find_all("span", class_="linkified"):
+        if span.has_attr("data-text"):
+            span.replace_with(span["data-text"])  # Replace <span> with the text inside data-text
+
+    cleaned_text = soup.get_text()  # Extract plain text
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()  # Normalize spaces
+    return cleaned_text
 
 
 def process_dept_link(dept_link):
@@ -294,13 +309,17 @@ def export_to_heroku(df):
     print("✅ Successfully exported local SQLite data to Heroku Postgres!")
 
 
-
-
 if __name__ == "__main__":
     class_info_grade = main()  # 1) Fetch & process new data
     print("✅ Hourly update complete!")
     #Get DATABASE_URL from the environment
     DATABASE_URL = os.getenv("DATABASE_URL")
+
+    conn = sqlite3.connect("/Users/ethan/Desktop/all_data.db")
+    cursor = conn.cursor()
+
+    # Create table (modify columns based on your DataFrame structure)
+    class_info_grade.to_sql("courses", conn, if_exists="replace", index=False)
 
     # Ensure compatibility with SQLAlchemy (Heroku sometimes uses `postgres://`)
     if DATABASE_URL and DATABASE_URL.startswith("postgres://"):

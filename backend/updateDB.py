@@ -236,7 +236,9 @@ def main():
 
     # ----- Additional Data Merging for Grades -----
     class_data_drive = "1a9cxucOZa3Ix-D9f5PCc8xXfhKIOwoXf"
-    class_data = fetch_json_from_drive(class_data_drive).T
+    class_data_raw = fetch_json_from_drive(class_data_drive)
+    class_data = pd.DataFrame.from_dict(class_data_raw, orient="index")
+
 
     coi_df = class_data["coi_data"].apply(pd.Series)
     gpa_df = class_data["gpa_distro"].apply(pd.Series)

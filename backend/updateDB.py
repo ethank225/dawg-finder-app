@@ -27,6 +27,7 @@ from sqlalchemy import create_engine, text
 import os
 import requests
 import time
+import ratemyprofessor as rmp
 
 # Add these imports for Heroku export
 from sqlalchemy import create_engine
@@ -212,11 +213,48 @@ def process_dept_link(dept_link):
         print(f"Error processing {dept_link}: {e}")
     return None
 
+def scrape_rmp(teachers):
+            # Initialize empty DataFrame
+    columns = ["Name", "Rating", "Difficulty", "Link"]
+    results_rmp = []
+    # Set to track unique names
+    unique_names = set()
+
+    # University of Washington
+    SCHOOL = rmp.School(school_id=1530)
+
+    def get_professors_by_name(name):
+        try:
+            professors = rmp.get_professors_by_school_and_name(SCHOOL, name)
+            if not professors:
+                print(f"No matches found for {name}")
+            else:
+                for prof in professors:
+                    if prof.name not in unique_names:  # Avoid duplicates
+                        unique_names.add(prof.name)
+                        new_data = {
+                            "Name": prof.name,
+                            "Rating": prof.rating,
+                            "Difficulty": prof.difficulty,
+                            "Link": f"https://www.ratemyprofessors.com/professor/{prof.id}",
+                            "Department": prof.department
+                        }
+                        results_rmp.append(new_data)
+
+                        print(f"Added: {prof.name}, Rating: {prof.rating}, Difficulty: {prof.difficulty}")
+        except Exception as e:
+            print(f"Error retrieving {name}: {e}")
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        executor.map(get_professors_by_name, teachers)
+
+    return results_rmp
+
 
 def main():
     all_dfs = []  # List to store DataFrames
-    all_links = get_links("https://www.washington.edu/students/crscat/", "html")
-    # all_links = ['https://www.washington.edu/students/crscat/econ.html']
+    # all_links = get_links("https://www.washington.edu/students/crscat/", "html")
+    all_links = ['https://www.washington.edu/students/crscat/econ.html']
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         for link in all_links:
@@ -316,10 +354,13 @@ def main():
     class_info_grade["End"] = class_info_grade["End"].apply(convert_to_military)
     class_info_grade["prefix"] = class_info_grade["index"].str[:-3]
 
-    rmp_drive_code = "1NMaKrCSJh3OvV7JOfqfg85qM_qcBzw3q"
-    # Fuzzy matching with RMP data
-    rmp_data_raw = fetch_json_from_drive(rmp_drive_code)
-    rmp_data = pd.DataFrame.from_dict(rmp_data_raw)
+
+    teachers = class_info_grade['Instructor'].unique()
+
+
+
+
+    rmp_data = pd.DataFrame(scrape_rmp(teachers))
 
     class_info_grade["Instructor"] = (
         class_info_grade["Instructor"].astype(str).fillna("")

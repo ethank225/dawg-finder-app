@@ -131,7 +131,7 @@ export function InstructorProfile({
                             const fullStar = star <= Math.floor(roundedRating);
                             const halfStar =
                               star === Math.ceil(roundedRating) && !fullStar;
-                            const gradientId = `half-fill-${index}`; // Unique gradient ID for each star
+                              const gradientId = `half-fill-${index}-rating`;
 
                             return (
                               <motion.div
@@ -207,7 +207,7 @@ export function InstructorProfile({
                             const fullStar = star <= Math.floor(roundedRating);
                             const halfStar =
                               star === Math.ceil(roundedRating) && !fullStar;
-                            const gradientId = `half-fill-${index}`; // Unique gradient ID for each star
+                              const gradientId = `half-fill-${index}-difficulty`;
 
                             return (
                               <motion.div

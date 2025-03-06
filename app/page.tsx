@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -18,14 +18,11 @@ import {
   Building2,
   Star,
   ThumbsUp,
-  BarChart3
+  BarChart3,
 } from "lucide-react";
 
-import { ChartNoAxesCombined } from 'lucide-react';
+import { ChartNoAxesCombined } from "lucide-react";
 import RechartsBarChart from "@/components/ui/RechartsBarChart";
-
-// Remove Badge import since we're not using it anymore
-// import { Badge } from "@/components/ui/badge"
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,38 +35,40 @@ export default function Home() {
   const [selectedInstructor, setSelectedInstructor] = useState<string | null>(
     null
   );
+  const [showWidenSearch, setShowWidenSearch] = useState(false); // Added state variable
 
   function getRatingInfo(rating: number) {
     if (rating >= 4.5) {
-      return { label: "Excellent", style: { backgroundColor: "#22c55e" } };
+      return { label: "Excellent", style: { backgroundColor: "#16a34a" } }; // Green
     } else if (rating >= 3.5) {
-      return { label: "Good", style: { backgroundColor: "#84cc16" } };
+      return { label: "Good", style: { backgroundColor: "#22c55e" } }; // Light Green
     } else if (rating >= 2.5) {
-      return { label: "Average", style: { backgroundColor: "#fde047" } };
+      return { label: "Average", style: { backgroundColor: "#eab308" } }; // Yellow
+    } else if (rating >= 1.5) {
+      return { label: "Poor", style: { backgroundColor: "#f97316" } }; // Orange
     } else if (rating > 0) {
-      return { label: "Bad", style: { backgroundColor: "#ef4444" } };
-    } else if (rating == 0) {
-      return { label: "None", style: { backgroundColor: "#d1d5db" } };
+      return { label: "Bad", style: { backgroundColor: "#dc2626" } }; // Red
     } else {
-      return { label: "None", style: { backgroundColor: "#ef4444" } };
+      return { label: "None", style: { backgroundColor: "#9ca3af" } }; // Gray
     }
   }
 
   function getDifficultyInfo(rating: number) {
     if (rating >= 4.5) {
-      return { label: "Hard", style: { backgroundColor: "#ef4444" } };
+      return { label: "Very Hard", style: { backgroundColor: "#dc2626" } }; // Red
     } else if (rating >= 3.5) {
-      return { label: "Medium", style: { backgroundColor: "#facc15" } };
+      return { label: "Hard", style: { backgroundColor: "#f97316" } }; // Orange
+    } else if (rating >= 2.5) {
+      return { label: "Medium", style: { backgroundColor: "#eab308" } }; // Yellow
     } else if (rating >= 1.5) {
-      return { label: "Easy", style: { backgroundColor: "#22c55e" } };
+      return { label: "Easy", style: { backgroundColor: "#22c55e" } }; // Light Green
     } else if (rating > 0) {
-      return { label: "Very Easy", style: { backgroundColor: "#8BC34A" } };
-    } else if (rating == 0) {
-      return { label: "None", style: { backgroundColor: "#d1d5db" } };
+      return { label: "Very Easy", style: { backgroundColor: "#16a34a" } }; // Green
     } else {
-      return { label: "None", style: { backgroundColor: "#ef4444" } };
+      return { label: "None", style: { backgroundColor: "#9ca3af" } }; // Gray
     }
   }
+
 
   //Handles the search query
   const handleSearch = async (e: React.FormEvent) => {
@@ -100,15 +99,12 @@ export default function Home() {
 
   //Handle when you click on an event
   const handleClassClick = async (classItem: any) => {
-    if (
-      !classItem ||
-      !classItem["UUID"]
-    ) {
+    if (!classItem || !classItem["UUID"]) {
       console.error("Invalid classItem:", classItem);
       return;
     }
 
-    const UUID = encodeURIComponent(classItem["UUID"])
+    const UUID = encodeURIComponent(classItem["UUID"]);
 
     // Construct query string with separate parameters
     const queryString = `UUID=${UUID}`;
@@ -147,6 +143,39 @@ export default function Home() {
       hour12: true,
     });
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // More reliable way to detect bottom of page
+      const scrollPosition = window.scrollY + window.innerHeight;
+      const pageHeight = document.documentElement.scrollHeight;
+      const scrollThreshold = 20; // pixels from bottom
+
+      const scrolledToBottom = scrollPosition >= pageHeight - scrollThreshold;
+
+      // For debugging
+      console.log({
+        scrollPosition,
+        pageHeight,
+        isAtBottom: scrolledToBottom,
+        searchPerformed,
+        isLoading,
+      });
+
+      if (scrolledToBottom && searchPerformed && !isLoading) {
+        setShowWidenSearch(true);
+      } else if (!scrolledToBottom) {
+        setShowWidenSearch(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Initial check in case the page isn't long enough to scroll
+    setTimeout(handleScroll, 500);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [searchPerformed, isLoading]);
 
   return (
     <main className="min-h-screen bg-white text-[#4b2e83]">
@@ -450,6 +479,26 @@ export default function Home() {
           </DialogContent>
         </Dialog>
       </div>
+      {searchPerformed && !isLoading && searchResult.length > 0 && (
+        <div className="flex justify-center mt-16 mb-64 pb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="flex justify-center"
+          >
+            <Button
+              onClick={() => {
+                console.log("Widen search clicked");
+                setShowWidenSearch(false);
+              }}
+              className="bg-[#4b2e83] hover:bg-[#4b2e83]/90 text-white px-8 py-6 text-lg rounded-full shadow-lg"
+            >
+              Widen Search?
+            </Button>
+          </motion.div>
+        </div>
+      )}
     </main>
   );
 }

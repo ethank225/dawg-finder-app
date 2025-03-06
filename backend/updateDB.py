@@ -357,9 +357,6 @@ def main():
 
     teachers = class_info_grade['Instructor'].unique()
 
-
-
-
     rmp_data = pd.DataFrame(scrape_rmp(teachers))
 
     class_info_grade["Instructor"] = (
@@ -487,6 +484,7 @@ def export_to_heroku(df, table_name):
 
 
 if __name__ == "__main__":
+    print("Starting update...", flush=True)
     DATABASE_URL = os.getenv("DATABASE_URL")
 
     df = main()  # 1) Fetch & process new data

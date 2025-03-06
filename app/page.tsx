@@ -480,7 +480,7 @@ export default function Home() {
         </Dialog>
       </div>
       {searchPerformed && !isLoading && searchResult.length > 0 && (
-        <div className="flex justify-center mt-16 mb-64 pb-20">
+        <div className="flex justify-center mt-16 mb-30 pb-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

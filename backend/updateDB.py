@@ -256,7 +256,7 @@ def main():
     class_data = class_data.drop(columns=[str(i) for i in range(0, 41)]).join(gpa_df)
 
     # Extract GPA distribution data
-    gpa_df = class_data[[str(i) for i in range(0, 41)]]
+    gpa_df = gpa_df.apply(pd.to_numeric, errors="coerce").fillna(0).astype(int)
     # Convert column names to GPA values (0.0 to 4.0)
     gpa_values = np.array(
         [i / 10 for i in range(41)], dtype=float
@@ -318,7 +318,9 @@ def main():
 
     rmp_drive_code = "1NMaKrCSJh3OvV7JOfqfg85qM_qcBzw3q"
     # Fuzzy matching with RMP data
-    rmp_data = fetch_json_from_drive(rmp_drive_code)
+    rmp_data_raw = fetch_json_from_drive(rmp_drive_code)
+    rmp_data = pd.DataFrame.from_dict(rmp_data_raw)
+
     class_info_grade["Instructor"] = (
         class_info_grade["Instructor"].astype(str).fillna("")
     )
@@ -369,9 +371,10 @@ def main():
     )
 
     # 2nd fuzzy merge with course evaluations
-    course_eval_ratings = pd.read_json(
-        "/backend/data/course_eval_ratings.json"
-    )
+
+
+    course_eval_ratings_raw = fetch_json_from_drive("1lPPGZjzPJRgq7Nebo3_kv7RS1LV18VyD")
+    course_eval_ratings = pd.DataFrame.from_dict(course_eval_ratings_raw)
     merged, match_df = fuzzy_merge(
         class_info_grade_rmp,
         course_eval_ratings,
@@ -449,7 +452,7 @@ if __name__ == "__main__":
 
     #clean the df
     df = df.drop_duplicates(['Course Code', "Section", "Instructor Name", "Term"])
-    df['Clean_Course_Code'] = df['Course_Code'].str.replace(" ", "", regex=True)
+    df['Clean_Course_Code'] = df['Course Code'].str.replace(" ", "", regex=True)
     df['UUID'] = df['Clean_Course_Code'] + df['Section'].apply(lambda x: x[0] if len(x) == 2 else x) + df['Term']
     df['UUID'] = df['UUID'].str.replace(" ", "", regex=True)
 

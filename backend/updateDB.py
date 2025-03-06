@@ -253,8 +253,8 @@ def scrape_rmp(teachers):
 
 def main():
     all_dfs = []  # List to store DataFrames
-    # all_links = get_links("https://www.washington.edu/students/crscat/", "html")
-    all_links = ['https://www.washington.edu/students/crscat/econ.html']
+    all_links = get_links("https://www.washington.edu/students/crscat/", "html")
+    # all_links = ['https://www.washington.edu/students/crscat/econ.html']
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         for link in all_links:

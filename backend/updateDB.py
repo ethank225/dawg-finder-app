@@ -229,7 +229,7 @@ def main():
 
     # Now set up class_data (Grades)
     class_data = pd.read_json(
-        "/dawgfinder/backend/data/grade_catalog.json"
+        "/backend/data/grade_catalog.json"
     ).T
     coi_df = class_data["coi_data"].apply(pd.Series)
     gpa_df = class_data["gpa_distro"].apply(pd.Series)
@@ -309,7 +309,7 @@ def main():
 
     # Fuzzy matching with RMP data
     rmp_data = pd.read_json(
-        "/dawgfinder//backend/data/rmp_info.json"
+        "/backend/data/rmp_info.json"
     )
     class_info_grade["Instructor"] = (
         class_info_grade["Instructor"].astype(str).fillna("")

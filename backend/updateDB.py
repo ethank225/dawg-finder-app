@@ -53,6 +53,15 @@ cookies = {
 session = requests.Session()  # Use a session to maintain cookies
 
 # Load environment variables from .env.local
+def fetch_json_from_drive(file_id):
+    """Fetch JSON data from a public Google Drive file."""
+    url = f"https://drive.google.com/uc?id={file_id}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        return response.json()  # Convert JSON response
+    else:
+        raise Exception(f"Failed to fetch JSON: {response.status_code}")
 
 
 def get_links(url, search, max_retries=10):
@@ -226,11 +235,9 @@ def main():
     class_info_df["index"] = class_info_df["Course Code"].str.replace(" ", "")
 
     # ----- Additional Data Merging for Grades -----
+    class_data_drive = "1a9cxucOZa3Ix-D9f5PCc8xXfhKIOwoXf"
+    class_data = fetch_json_from_drive(class_data_drive).T
 
-    # Now set up class_data (Grades)
-    class_data = pd.read_json(
-        "/backend/data/grade_catalog.json"
-    ).T
     coi_df = class_data["coi_data"].apply(pd.Series)
     gpa_df = class_data["gpa_distro"].apply(pd.Series)
 
@@ -307,10 +314,9 @@ def main():
     class_info_grade["End"] = class_info_grade["End"].apply(convert_to_military)
     class_info_grade["prefix"] = class_info_grade["index"].str[:-3]
 
+    rmp_drive_code = "1NMaKrCSJh3OvV7JOfqfg85qM_qcBzw3q"
     # Fuzzy matching with RMP data
-    rmp_data = pd.read_json(
-        "/backend/data/rmp_info.json"
-    )
+    rmp_data = fetch_json_from_drive(rmp_drive_code)
     class_info_grade["Instructor"] = (
         class_info_grade["Instructor"].astype(str).fillna("")
     )

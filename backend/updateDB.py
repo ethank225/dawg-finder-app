@@ -206,7 +206,8 @@ def process_dept_link(dept_link):
 
 def main():
     all_dfs = []  # List to store DataFrames
-    all_links = get_links("https://www.washington.edu/students/crscat/", "html")
+    # all_links = get_links("https://www.washington.edu/students/crscat/", "html")
+    all_links = ['https://www.washington.edu/students/crscat/econ.html']
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         for link in all_links:
@@ -228,7 +229,7 @@ def main():
 
     # Now set up class_data (Grades)
     class_data = pd.read_json(
-        "/Users/ethan/Desktop/dawgfinder/backend/data/grade_catalog.json"
+        "./dawgfinder/backend/data/grade_catalog.json"
     ).T
     coi_df = class_data["coi_data"].apply(pd.Series)
     gpa_df = class_data["gpa_distro"].apply(pd.Series)
@@ -308,7 +309,7 @@ def main():
 
     # Fuzzy matching with RMP data
     rmp_data = pd.read_json(
-        "/Users/ethan/Desktop/dawgfinder//backend/data/rmp_info.json"
+        "./dawgfinder//backend/data/rmp_info.json"
     )
     class_info_grade["Instructor"] = (
         class_info_grade["Instructor"].astype(str).fillna("")
@@ -361,7 +362,7 @@ def main():
 
     # 2nd fuzzy merge with course evaluations
     course_eval_ratings = pd.read_json(
-        "/Users/ethan/Desktop/dawgfinder/backend/data/course_eval_ratings.json"
+        "./backend/data/course_eval_ratings.json"
     )
     merged, match_df = fuzzy_merge(
         class_info_grade_rmp,
